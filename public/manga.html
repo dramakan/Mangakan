@@ -129,6 +129,9 @@
             .main-reader { height: 100vh; }
         }
     </style>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ff9a9e">
+    <link rel="apple-touch-icon" href="/icon-192.png">
 </head>
 <body>
    
@@ -444,6 +447,19 @@
                 btn.innerText = "🚀 Publish Chapter"; 
             }
         }
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('✨ ServiceWorker registered successfully!');
+                    })
+                    .catch(err => {
+                        console.log('❌ ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    
     </script>
 </body>
 </html>

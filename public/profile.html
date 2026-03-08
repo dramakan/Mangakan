@@ -115,6 +115,9 @@
             .manga-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
         }
     </style>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ff9a9e">
+    <link rel="apple-touch-icon" href="/icon-192.png">
 </head>
 <body>
 
@@ -369,6 +372,19 @@
         }
 
         function logout() { localStorage.removeItem('mangakan_token'); window.location.href = 'index.html'; }
+           
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('✨ ServiceWorker registered successfully!');
+                    })
+                    .catch(err => {
+                        console.log('❌ ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    
     </script>
 </body>
 </html>

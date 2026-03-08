@@ -260,6 +260,9 @@
         }
         .admin-delete-btn:hover { background: #ff4d4d; color: white; border-color: #ff4d4d; }
     </style>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ff9a9e">
+    <link rel="apple-touch-icon" href="/icon-192.png">
 </head>
 <body>
 
@@ -554,6 +557,18 @@
                 statusDiv.style.color = 'red';
                 statusDiv.innerText = 'Server error ❌ Is the backend running?';
             }
+        }
+        
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('✨ ServiceWorker registered successfully!');
+                    })
+                    .catch(err => {
+                        console.log('❌ ServiceWorker registration failed: ', err);
+                    });
+            });
         }
     </script>
 </body>

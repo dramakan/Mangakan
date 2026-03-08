@@ -104,6 +104,9 @@
             .manga-card img { height: 220px; }
         }
     </style>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ff9a9e">
+    <link rel="apple-touch-icon" href="/icon-192.png">
 </head>
 <body>
 
@@ -239,6 +242,19 @@
                 resultsText.innerText = "The connection to the vault was interrupted.";
             }
         }
+           
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('✨ ServiceWorker registered successfully!');
+                    })
+                    .catch(err => {
+                        console.log('❌ ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    
     </script>
 </body>
 </html>
