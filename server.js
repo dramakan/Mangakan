@@ -37,8 +37,9 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Temporary memory vault to hold OTPs before the account is fully created
+/// Temporary memory vault to hold OTPs before the account is fully created
 const otpVault = {}; 
+const resetVault = {}; // ✨ NEW: Memory vault for password resets
 
 // ==========================================
 // ☁️ CLOUDINARY UPLOAD CONFIGURATION
@@ -204,6 +205,59 @@ app.post('/api/login', async (req, res) => {
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         res.json({ success: true, token, message: 'Welcome back!' });
     } catch (error) { res.status(500).json({ success: false, message: 'Error' }); }
+});
+// ✨ NEW: FORGOT PASSWORD (SEND OTP) ✨
+app.post('/api/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ success: false, message: 'No traveler found with this email!' });
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        resetVault[email] = { otp, expires: Date.now() + 300000 }; // 5 min expiry
+
+        const mailOptions = {
+            from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: '✨ Password Reset Code',
+            html: `
+                <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; color: #2d3142;">
+                    <h2 style="color: #ff9a9e;">Password Reset Request</h2>
+                    <p>Here is your magical code to reset your password:</p>
+                    <h1 style="background: #fcfcfd; border: 2px dashed #a18cd1; padding: 15px; letter-spacing: 5px; color: #a18cd1;">${otp}</h1>
+                    <p style="font-size: 12px; color: #8c92a4;">This code will expire in 5 minutes.</p>
+                </div>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+        res.json({ success: true, message: 'Reset code sent to your email!' });
+    } catch (error) { 
+        res.status(500).json({ success: false, message: 'Failed to send email.' }); 
+    }
+});
+
+// ✨ NEW: RESET PASSWORD (VERIFY OTP & UPDATE) ✨
+app.post('/api/reset-password', async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+        const storedData = resetVault[email];
+
+        if (!storedData) return res.status(400).json({ success: false, message: 'Code expired or not found.' });
+        if (storedData.otp !== otp) return res.status(400).json({ success: false, message: 'Incorrect code.' });
+        if (Date.now() > storedData.expires) {
+            delete resetVault[email];
+            return res.status(400).json({ success: false, message: 'Code has expired.' });
+        }
+
+        // Code is correct! Hash the new password and update the user
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await User.findOneAndUpdate({ email }, { password: hashedPassword });
+        
+        delete resetVault[email]; // Clean up the vault
+        res.json({ success: true, message: 'Password successfully updated!' });
+
+    } catch (error) { res.status(500).json({ success: false, message: 'Error resetting password.' }); }
 });
 
 app.get('/api/me', async (req, res) => {

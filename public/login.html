@@ -11,7 +11,6 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
-        /* --- PREMIUM & CUTE CSS VARIABLES --- */
         :root {
             --bg-main: #fcfcfd; --bg-card: #ffffff; --primary: #ff9a9e; 
             --accent: #a18cd1; --text-dark: #2d3142; --text-muted: #8c92a4;
@@ -32,7 +31,6 @@
 
         h1, h2, h3, .logo, nav a, .auth-title, .btn-submit { font-family: 'Poppins', sans-serif; }
 
-        /* --- THE ANIMATING MASCOT --- */
         #mascot {
             position: fixed; top: -100px; left: -100px; 
             width: 75px; height: 75px; background: transparent; pointer-events: none; 
@@ -44,7 +42,6 @@
             filter: drop-shadow(0 8px 15px rgba(255, 154, 158, 0.3));
         }
 
-        /* --- LOADING SCREEN --- */
         #loader {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: var(--bg-main); display: flex; justify-content: center; align-items: center; flex-direction: column;
@@ -56,7 +53,6 @@
         }
         .loader-text { margin-top: 25px; font-weight: 700; font-size: 16px; letter-spacing: 1.5px; color: var(--text-dark); animation: pulseText 2s infinite; }
 
-        /* --- NAVBAR --- */
         header {
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px);
             padding: 18px 5%; display: flex; justify-content: space-between; align-items: center;
@@ -69,7 +65,6 @@
         nav a::after { content: '✨'; position: absolute; font-size: 10px; top: -10px; right: -10px; opacity: 0; transition: var(--transition); transform: scale(0); }
         nav a:hover::after { opacity: 1; transform: scale(1); } 
 
-        /* --- ✨ AUTHENTICATION CARD ✨ --- */
         main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 60px 5%; }
 
         .auth-card {
@@ -85,12 +80,10 @@
         .auth-title span { background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .auth-subtitle { font-size: 15px; color: var(--text-muted); font-weight: 600; margin-bottom: 30px; }
 
-        /* OR Divider */
         .divider { display: flex; align-items: center; text-align: center; margin-bottom: 25px; margin-top: 10px;}
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 2px dashed rgba(161, 140, 209, 0.2); }
         .divider span { padding: 0 15px; color: var(--text-muted); font-weight: 800; font-size: 13px; letter-spacing: 1px; }
 
-        /* Form Inputs */
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; font-size: 14px; padding-left: 5px;}
         .form-control {
@@ -101,7 +94,7 @@
         
         #error-msg { color: #ff4d4d; margin-bottom: 15px; font-weight: 700; font-size: 14px; display: none; }
 
-        .forgot-password { display: block; text-align: right; color: var(--accent); font-size: 13px; font-weight: 700; margin-top: -10px; margin-bottom: 25px; text-decoration: none; transition: var(--transition); }
+        .forgot-password { display: block; text-align: right; color: var(--accent); font-size: 13px; font-weight: 700; margin-top: -10px; margin-bottom: 25px; text-decoration: none; transition: var(--transition); cursor: pointer;}
         .forgot-password:hover { color: var(--primary); }
 
         .btn-submit {
@@ -118,7 +111,13 @@
         footer { background: #ffffff; padding: 30px 5%; text-align: center; border-top: 1px solid rgba(0,0,0,0.03); color: var(--text-muted); font-weight: 600; font-size: 14px; margin-top: auto; }
         footer a { color: var(--accent); text-decoration: none; margin: 0 12px; transition: var(--transition); }
 
-        /* --- ANIMATIONS --- */
+        /* --- MODAL STYLES --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-box { background: var(--bg-card); padding: 40px; border-radius: 24px; text-align: center; width: 90%; max-width: 400px; border: 2px solid var(--primary); }
+        .modal-box h2 { font-family: 'Poppins'; margin-bottom: 10px; color: var(--text-dark); }
+        .modal-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; }
+        .otp-input { width: 100%; padding: 15px; text-align: center; font-size: 24px; letter-spacing: 5px; border-radius: 12px; border: 2px solid rgba(161, 140, 209, 0.3); margin-bottom: 20px; outline: none; font-family: 'Nunito'; font-weight: 800; color: var(--primary); }
+
         @keyframes breatheCharacter { 0% { transform: scale(1); } 100% { transform: scale(1.04) translateY(-2px); } }
         @keyframes breatheOrb { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 154, 158, 0.4); } 50% { transform: scale(1.15); box-shadow: 0 0 40px rgba(161, 140, 209, 0.6); } }
         @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
@@ -190,7 +189,7 @@
                     <input type="password" id="userPassword" class="form-control" placeholder="••••••••" required>
                 </div>
 
-                <a href="#" class="forgot-password">Forgot password?</a>
+                <a onclick="document.getElementById('forgotEmailModal').style.display='flex'" class="forgot-password">Forgot password?</a>
 
                 <button type="submit" class="btn-submit" id="submitBtn">✨ Sign In</button>
             </form>
@@ -206,8 +205,28 @@
         <p style="margin-top: 15px;"><a href="privacy.html">Privacy</a> • <a href="terms.html">Terms</a> • <a href="creator.html">Contact</a></p>
     </footer>
 
+    <div id="forgotEmailModal" class="modal-overlay">
+        <div class="modal-box">
+            <h2>Reset Password</h2>
+            <p>Enter your email to receive a recovery code.</p>
+            <input type="email" id="resetEmailInput" placeholder="traveler@realm.com" class="form-control" style="margin-bottom: 20px;">
+            <button onclick="sendResetOTP()" id="btnSendReset" class="btn-submit" style="margin-top: 0;">Send Code</button>
+            <button onclick="document.getElementById('forgotEmailModal').style.display='none'" style="background: none; border: none; color: var(--text-muted); font-weight: 700; margin-top: 15px; cursor: pointer;">Cancel</button>
+        </div>
+    </div>
+
+    <div id="resetPasswordModal" class="modal-overlay">
+        <div class="modal-box">
+            <h2>Create New Password</h2>
+            <p>Enter the 6-digit code sent to your email and your new password.</p>
+            <input type="text" id="resetOtpInput" placeholder="123456" class="otp-input">
+            <input type="password" id="newPasswordInput" placeholder="New Password" class="form-control" style="margin-bottom: 20px;">
+            <button onclick="verifyResetOTP()" id="btnVerifyReset" class="btn-submit" style="margin-top: 0;">Update Password</button>
+            <button onclick="document.getElementById('resetPasswordModal').style.display='none'" style="background: none; border: none; color: var(--text-muted); font-weight: 700; margin-top: 15px; cursor: pointer;">Cancel</button>
+        </div>
+    </div>
+
     <script>
-        // --- LOADING SCREEN ---
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const loader = document.getElementById('loader');
@@ -215,7 +234,6 @@
             }, 800); 
         });
 
-        // ✨ GOOGLE LOGIN MAGIC ✨
         async function handleGoogleResponse(response) {
             const token = response.credential;
             const btn = document.getElementById('submitBtn');
@@ -245,7 +263,6 @@
             }
         }
 
-        // NORMAL EMAIL LOGIN
         async function simulateLogin() {
             const btn = document.getElementById('submitBtn');
             const email = document.getElementById('userEmail').value;
@@ -278,6 +295,67 @@
                 errorMsg.style.display = 'block';
                 btn.innerHTML = '✨ Sign In';
             }
+        }
+
+        // ✨ FORGOT PASSWORD MAGIC - STEP 1 ✨
+        let resetEmailSaved = '';
+        async function sendResetOTP() {
+            const email = document.getElementById('resetEmailInput').value.trim();
+            const btn = document.getElementById('btnSendReset');
+            if(!email) return alert("Please enter your email!");
+
+            btn.innerHTML = '⏳ Sending...';
+
+            try {
+                const response = await fetch('/api/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    resetEmailSaved = email; // Save it for step 2
+                    document.getElementById('forgotEmailModal').style.display = 'none';
+                    document.getElementById('resetPasswordModal').style.display = 'flex';
+                } else {
+                    alert("❌ " + data.message);
+                }
+            } catch (err) {
+                alert('Connection failed.');
+            }
+            btn.innerHTML = 'Send Code';
+        }
+
+        // ✨ FORGOT PASSWORD MAGIC - STEP 2 ✨
+        async function verifyResetOTP() {
+            const otp = document.getElementById('resetOtpInput').value.trim();
+            const newPassword = document.getElementById('newPasswordInput').value;
+            const btn = document.getElementById('btnVerifyReset');
+
+            if(!otp || !newPassword) return alert("Please fill in both fields!");
+
+            btn.innerHTML = '⏳ Updating...';
+
+            try {
+                const response = await fetch('/api/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: resetEmailSaved, otp, newPassword })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert("✨ Password successfully updated! You can now log in.");
+                    document.getElementById('resetPasswordModal').style.display = 'none';
+                    document.getElementById('userPassword').value = ''; 
+                } else {
+                    alert("❌ " + data.message);
+                }
+            } catch (err) {
+                alert('Connection failed.');
+            }
+            btn.innerHTML = 'Update Password';
         }
     </script>
 </body>
