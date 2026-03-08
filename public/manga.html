@@ -8,15 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --bg-main: #fcfcfd; 
-            --bg-card: #ffffff; 
-            --primary: #ff9a9e; 
-            --accent: #a18cd1; 
-            --text-dark: #2d3142; 
-            --text-muted: #8c92a4; 
+            --bg-main: #fcfcfd; --bg-card: #ffffff; --primary: #ff9a9e; 
+            --accent: #a18cd1; --text-dark: #2d3142; --text-muted: #8c92a4; 
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
         }
-        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         ::-webkit-scrollbar { width: 10px; }
@@ -25,21 +20,16 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         body { 
-            background-color: var(--bg-main); 
-            color: var(--text-dark); 
-            font-family: 'Nunito', sans-serif; 
+            background-color: var(--bg-main); color: var(--text-dark); font-family: 'Nunito', sans-serif; 
             display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
-            background-image: radial-gradient(rgba(255, 154, 158, 0.08) 2px, transparent 2px);
-            background-size: 30px 30px;
+            background-image: radial-gradient(rgba(255, 154, 158, 0.08) 2px, transparent 2px); background-size: 30px 30px;
         }
-        
-        h1, h2, h3, nav a, .btn-primary, .logo, .sidebar-title, .ctrl-btn { font-family: 'Poppins', sans-serif; }
+        h1, h2, h3, nav a, .logo, .sidebar-title, .ctrl-btn { font-family: 'Poppins', sans-serif; }
 
         header { 
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); 
-            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; 
-            position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid rgba(255, 154, 158, 0.1); 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02); 
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 15px 5%; 
+            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; 
+            border-bottom: 2px solid rgba(255, 154, 158, 0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.02); 
         }
         .logo { font-size: 26px; font-weight: 800; background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; letter-spacing: -0.5px;}
         nav ul { display: flex; list-style: none; gap: 25px; align-items: center; }
@@ -58,18 +48,23 @@
         .sidebar::-webkit-scrollbar-track { background: transparent; }
         .sidebar::-webkit-scrollbar-thumb { border: 2px solid #fff; }
         
-        .sidebar-cover { width: 100%; height: 180px; object-fit: cover; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 15px 30px rgba(161, 140, 209, 0.2); border: 3px solid #fff; }
-        .sidebar-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; line-height: 1.2; color: var(--text-dark); }
+        .sidebar-cover { width: 100%; height: 180px; object-fit: cover; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 15px 30px rgba(161, 140, 209, 0.2); border: 3px solid #fff; }
+        .sidebar-title { font-size: 22px; font-weight: 800; margin-bottom: 5px; line-height: 1.2; color: var(--text-dark); }
+        
+        /* ✨ COMMUNITY STATS ✨ */
+        .stats-row { display: flex; gap: 15px; font-size: 13px; font-weight: 800; color: var(--accent); margin-bottom: 15px; }
+        .stats-row span { display: flex; align-items: center; gap: 5px; background: rgba(161, 140, 209, 0.1); padding: 4px 10px; border-radius: 10px;}
+
         .sidebar-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; font-weight: 600;}
         
-        /* ✨ SUBSCRIBE BUTTON STYLES ✨ */
-        .btn-subscribe-sidebar {
-            width: 100%; background: rgba(255, 154, 158, 0.1); color: var(--primary);
-            padding: 12px; border-radius: 14px; font-weight: 800; font-size: 14px; border: 2px solid transparent;
-            cursor: pointer; transition: var(--transition); margin-bottom: 25px; font-family: 'Nunito';
+        /* ACTIONS ROW */
+        .action-row { display: flex; gap: 10px; margin-bottom: 25px; }
+        .btn-action {
+            flex: 1; background: rgba(255, 154, 158, 0.1); color: var(--primary); padding: 12px; border-radius: 14px; 
+            font-weight: 800; font-size: 14px; border: 2px solid transparent; cursor: pointer; transition: var(--transition); font-family: 'Nunito';
         }
-        .btn-subscribe-sidebar:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,154,158,0.3);}
-        .btn-subscribe-sidebar.active { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 5px 15px rgba(255,154,158,0.4); }
+        .btn-action:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,154,158,0.3);}
+        .btn-action.active { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 5px 15px rgba(255,154,158,0.4); }
 
         .chapter-list { display: flex; flex-direction: column; gap: 12px; }
         .chapter-btn { 
@@ -82,64 +77,54 @@
         .chapter-btn.active { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 8px 20px rgba(255,154,158,0.4); border-color: transparent; }
 
         #creatorControls { margin-top: 25px; display: none; padding-top: 20px; border-top: 2px dashed rgba(161, 140, 209, 0.2);} 
-        .btn-add-chapter { 
-            width: 100%; background: var(--text-dark); color: white; padding: 15px; 
-            border-radius: 16px; font-weight: 800; font-size: 15px; border: none; cursor: pointer; 
-            display: flex; justify-content: center; align-items: center; gap: 10px; transition: var(--transition);
-            box-shadow: 0 10px 20px rgba(45, 49, 66, 0.15);
-        }
+        .btn-add-chapter { width: 100%; background: var(--text-dark); color: white; padding: 15px; border-radius: 16px; font-weight: 800; font-size: 15px; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: var(--transition); box-shadow: 0 10px 20px rgba(45, 49, 66, 0.15);}
         .btn-add-chapter:hover { background: linear-gradient(135deg, var(--primary), var(--accent)); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(255, 154, 158, 0.3); }
 
         .main-reader { 
             flex: 1; background: #0a0a0c; overflow-y: auto; display: flex; 
             flex-direction: column; align-items: center; position: relative; scroll-behavior: smooth;
         }
-        .pages-container { 
-            width: 100%; max-width: 750px; display: flex; flex-direction: column; 
-            align-items: center; min-height: 80vh; background: #000;
-            box-shadow: 0 0 60px rgba(0,0,0,0.8); 
-        }
+        .pages-container { width: 100%; max-width: 750px; display: flex; flex-direction: column; align-items: center; min-height: 80vh; background: #000; box-shadow: 0 0 60px rgba(0,0,0,0.8); }
         .pages-container img { width: 100%; display: block; margin: 0; }
         
-        .reader-controls { 
-            width: 100%; max-width: 750px; display: flex; justify-content: space-between; 
-            padding: 40px 20px 80px 20px; background: #0a0a0c;
-        }
-        .ctrl-btn { 
-            background: rgba(255,255,255,0.08); color: white; padding: 15px 35px; 
-            border-radius: 30px; font-weight: 800; font-size: 16px; text-decoration: none; 
-            border: 2px solid transparent; cursor: pointer; transition: var(--transition); backdrop-filter: blur(5px);
-        }
+        .reader-controls { width: 100%; max-width: 750px; display: flex; justify-content: space-between; padding: 40px 20px 40px 20px; background: #0a0a0c;}
+        .ctrl-btn { background: rgba(255,255,255,0.08); color: white; padding: 15px 35px; border-radius: 30px; font-weight: 800; font-size: 16px; border: 2px solid transparent; cursor: pointer; transition: var(--transition); backdrop-filter: blur(5px);}
         .ctrl-btn:hover:not(:disabled) { background: rgba(255, 154, 158, 0.2); border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255, 154, 158, 0.2); }
         .ctrl-btn:disabled { opacity: 0.2; cursor: not-allowed; }
 
+        /* ✨ COMMENT SECTION ✨ */
+        .comments-section { width: 100%; max-width: 750px; padding: 40px 20px 80px 20px; background: #0a0a0c; color: white; border-top: 1px solid rgba(255,255,255,0.05);}
+        .comments-title { font-size: 20px; font-weight: 800; margin-bottom: 20px; color: white; display: flex; align-items: center; gap: 10px;}
+        
+        .comment-box { display: flex; gap: 15px; margin-bottom: 30px; }
+        .comment-input { flex: 1; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; color: white; font-family: 'Nunito'; font-size: 15px; outline: none; resize: vertical; min-height: 50px; transition: var(--transition);}
+        .comment-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+        .btn-post-comment { background: var(--primary); color: white; border: none; border-radius: 16px; padding: 0 25px; font-weight: 800; font-family: 'Poppins'; cursor: pointer; transition: var(--transition);}
+        .btn-post-comment:hover { background: white; color: var(--primary); transform: translateY(-2px);}
+
+        .comment-list { display: flex; flex-direction: column; gap: 20px; }
+        .comment-item { display: flex; gap: 15px; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);}
+        .comment-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 18px; color: white; object-fit: cover;}
+        .comment-content { flex: 1; }
+        .comment-user { font-weight: 800; font-size: 15px; margin-bottom: 5px; color: var(--primary); }
+        .comment-text { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.5; }
+
         .loading-text { color: rgba(255,255,255,0.5); padding: 100px 20px; font-weight: 700; font-size: 18px; text-align: center; }
 
-        .modal-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(10, 10, 15, 0.8); backdrop-filter: blur(8px); 
-            display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; animation: fadeIn 0.3s forwards;
-        }
-        .modal-content { 
-            background: var(--bg-card); padding: 40px; border-radius: 32px; width: 90%; max-width: 500px; 
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3); transform: scale(0.95); animation: popUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-        }
+        /* MODAL */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 15, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; animation: fadeIn 0.3s forwards; }
+        .modal-content { background: var(--bg-card); padding: 40px; border-radius: 32px; width: 90%; max-width: 500px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); transform: scale(0.95); animation: popUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
         .modal-content h2 { font-family: 'Poppins'; color: var(--text-dark); margin-bottom: 25px; font-weight: 800;}
-        .modal-content input { 
-            width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 16px; 
-            border: 2px solid rgba(161, 140, 209, 0.2); font-family: 'Nunito'; font-size: 15px; outline: none; transition: var(--transition);
-        }
+        .modal-content input { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 16px; border: 2px solid rgba(161, 140, 209, 0.2); font-family: 'Nunito'; font-size: 15px; outline: none; transition: var(--transition); }
         .modal-content input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(255, 154, 158, 0.15); }
-
         .upload-box-cute { background: rgba(161, 140, 209, 0.05); padding: 30px 20px; border-radius: 20px; border: 2px dashed rgba(161, 140, 209, 0.3); text-align: center; margin-bottom: 25px; transition: var(--transition);}
-        .upload-box-cute:hover { border-color: var(--primary); background: rgba(255, 154, 158, 0.05); }
 
         @keyframes fadeIn { to { opacity: 1; } }
         @keyframes popUp { to { transform: scale(1); } }
 
         @media (max-width: 850px) {
             .reader-layout { flex-direction: column; height: auto; min-height: calc(100vh - 67px); }
-            .sidebar { width: 100%; max-height: 300px; border-right: none; border-bottom: 3px solid rgba(255, 154, 158, 0.2); padding: 20px;}
+            .sidebar { width: 100%; max-height: auto; border-right: none; border-bottom: 3px solid rgba(255, 154, 158, 0.2); padding: 20px;}
             .sidebar-cover { display: none; }
             .main-reader { height: 100vh; }
         }
@@ -161,19 +146,24 @@
         <aside class="sidebar">
             <img src="" id="sbCover" class="sidebar-cover" alt="Cover">
             <h1 class="sidebar-title" id="sbTitle">Loading...</h1>
+            
+            <div class="stats-row">
+                <span id="viewCount">👁️ 0</span>
+                <span id="likeCount">❤️ 0</span>
+            </div>
+
             <p class="sidebar-desc" id="sbDesc"></p>
             
-            <button class="btn-subscribe-sidebar" id="btnSubscribe" onclick="toggleFavorite()" style="display:none;">
-                ✨ Subscribe
-            </button>
+            <div class="action-row" id="actionRow" style="display:none;">
+                <button class="btn-action" id="btnLike" onclick="toggleLike()">🤍 Like</button>
+                <button class="btn-action" id="btnSubscribe" onclick="toggleFavorite()">✨ Subscribe</button>
+            </div>
 
             <h3 style="margin-bottom: 12px; font-size: 13px; color: var(--accent); letter-spacing: 1px;">EPISODES</h3>
             <div class="chapter-list" id="chapterList"></div>
 
             <div id="creatorControls">
-                <button class="btn-add-chapter" onclick="document.getElementById('chapterModal').style.display='flex'">
-                    ➕ Add Chapter
-                </button>
+                <button class="btn-add-chapter" onclick="document.getElementById('chapterModal').style.display='flex'">➕ Add Chapter</button>
             </div>
         </aside>
 
@@ -181,9 +171,26 @@
             <div class="pages-container" id="pagesContainer">
                 <div class="loading-text">Select a chapter to start reading...</div>
             </div>
+            
             <div class="reader-controls">
                 <button class="ctrl-btn" id="btnPrev" disabled>⬅️ Previous</button>
                 <button class="ctrl-btn" id="btnNext" disabled>Next ➡️</button>
+            </div>
+
+            <div class="comments-section" id="commentsSection">
+                <div class="comments-title">💬 Community Realm</div>
+                
+                <div class="comment-box" id="commentBoxUI" style="display: none;">
+                    <textarea id="commentInput" class="comment-input" placeholder="Share your thoughts on this magic..."></textarea>
+                    <button class="btn-post-comment" onclick="postComment()">Post</button>
+                </div>
+                <div id="loginPrompt" style="color: var(--primary); font-weight: 800; margin-bottom: 20px; font-size: 14px;">
+                    ✨ Sign in to join the conversation!
+                </div>
+
+                <div class="comment-list" id="commentList">
+                    <div style="color: rgba(255,255,255,0.5); font-size: 14px;">Loading whispers...</div>
+                </div>
             </div>
         </main>
     </div>
@@ -209,13 +216,15 @@
         let chaptersData = [];
         let currentChapterIndex = -1;
         let currentUserId = null;
-        let currentUserFavorites = []; // ✨ To track subscriptions
+        let currentUserFavorites = []; 
 
         window.addEventListener('load', async () => {
             const token = localStorage.getItem('mangakan_token');
             if (token) {
                 document.getElementById('navBtn').innerHTML = '✨ My Profile';
                 document.getElementById('navBtn').href = 'profile.html';
+                document.getElementById('commentBoxUI').style.display = 'flex';
+                document.getElementById('loginPrompt').style.display = 'none';
                 
                 try {
                     const meRes = await fetch('/api/me', { headers: { 'Authorization': `Bearer ${token}` }});
@@ -228,7 +237,12 @@
             }
 
             if (!currentMangaId) return alert("Manga ID missing!");
+            
+            // Increment view count immediately!
+            fetch(`/api/mangas/${currentMangaId}/view`, { method: 'POST' });
+            
             loadMangaData();
+            loadComments();
         });
 
         async function loadMangaData() {
@@ -240,18 +254,27 @@
                     const manga = data.manga;
                     chaptersData = data.chapters;
 
-                    document.getElementById('sbCover').src = `${manga.coverArt}`;
+                    document.getElementById('sbCover').src = manga.coverArt;
                     document.getElementById('sbTitle').innerText = manga.title;
                     document.getElementById('sbDesc').innerText = manga.description || '';
+                    
+                    // Display Stats
+                    document.getElementById('viewCount').innerText = `👁️ ${manga.views + 1}`; // +1 for current load
+                    document.getElementById('likeCount').innerText = `❤️ ${manga.likes.length}`;
 
-                    // ✨ Setup Subscribe Button logic if logged in
                     if (currentUserId) {
-                        const btnSub = document.getElementById('btnSubscribe');
-                        btnSub.style.display = 'block';
+                        document.getElementById('actionRow').style.display = 'flex';
                         
+                        const btnSub = document.getElementById('btnSubscribe');
                         if (currentUserFavorites.includes(currentMangaId)) {
                             btnSub.classList.add('active');
                             btnSub.innerHTML = '💖 Subscribed';
+                        }
+
+                        const btnLike = document.getElementById('btnLike');
+                        if (manga.likes.includes(currentUserId)) {
+                            btnLike.classList.add('active');
+                            btnLike.innerHTML = '❤️ Liked';
                         }
                     }
 
@@ -260,23 +283,39 @@
                     }
 
                     renderChapterList();
-
-                    if (chaptersData.length > 0) {
-                        loadChapter(0);
-                    } else {
-                        document.getElementById('pagesContainer').innerHTML = '<div class="loading-text">No chapters have been summoned yet.</div>';
-                    }
+                    if (chaptersData.length > 0) loadChapter(0);
+                    else document.getElementById('pagesContainer').innerHTML = '<div class="loading-text">No chapters have been summoned yet.</div>';
                 }
             } catch(e) { console.error("Failed to load manga."); }
         }
 
-        // ✨ TOGGLE FAVORITE FUNCTION ✨
+        // ✨ LIKE SPELL
+        async function toggleLike() {
+            const token = localStorage.getItem('mangakan_token');
+            const btnLike = document.getElementById('btnLike');
+            const likeCountText = document.getElementById('likeCount');
+            
+            try {
+                const res = await fetch(`/api/mangas/${currentMangaId}/like`, {
+                    method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    likeCountText.innerText = `❤️ ${data.likesCount}`;
+                    if (data.isLiked) {
+                        btnLike.classList.add('active'); btnLike.innerHTML = '❤️ Liked';
+                    } else {
+                        btnLike.classList.remove('active'); btnLike.innerHTML = '🤍 Like';
+                    }
+                }
+            } catch(e) { alert("Failed to cast Like spell."); }
+        }
+
+        // ✨ SUBSCRIBE SPELL
         async function toggleFavorite() {
             const token = localStorage.getItem('mangakan_token');
-            if (!token) return window.location.href = 'login.html';
-
             const btnSub = document.getElementById('btnSubscribe');
-            
             try {
                 const res = await fetch('/api/favorites/toggle', {
                     method: 'POST',
@@ -284,21 +323,62 @@
                     body: JSON.stringify({ mangaId: currentMangaId })
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     if (data.isFavorited) {
-                        btnSub.classList.add('active');
-                        btnSub.innerHTML = '💖 Subscribed';
+                        btnSub.classList.add('active'); btnSub.innerHTML = '💖 Subscribed';
                         currentUserFavorites.push(currentMangaId);
                     } else {
-                        btnSub.classList.remove('active');
-                        btnSub.innerHTML = '✨ Subscribe';
+                        btnSub.classList.remove('active'); btnSub.innerHTML = '✨ Subscribe';
                         currentUserFavorites = currentUserFavorites.filter(id => id !== currentMangaId);
                     }
                 }
-            } catch(e) {
-                alert("Server magic fizzled out!");
-            }
+            } catch(e) { alert("Server magic fizzled out!"); }
+        }
+
+        // ✨ COMMENT SPELLS
+        async function loadComments() {
+            try {
+                const res = await fetch(`/api/mangas/${currentMangaId}/comments`);
+                const data = await res.json();
+                const list = document.getElementById('commentList');
+                
+                if (data.success && data.comments.length > 0) {
+                    list.innerHTML = data.comments.map(c => `
+                        <div class="comment-item">
+                            ${c.user.avatarUrl 
+                                ? `<img src="${c.user.avatarUrl}" class="comment-avatar">` 
+                                : `<div class="comment-avatar">${c.user.username.charAt(0).toUpperCase()}</div>`
+                            }
+                            <div class="comment-content">
+                                <div class="comment-user">${c.user.username}</div>
+                                <div class="comment-text">${c.text}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    list.innerHTML = '<div style="color: rgba(255,255,255,0.4); font-size: 14px; font-style: italic;">Be the first to speak in this realm...</div>';
+                }
+            } catch(e) { console.error("Could not load comments"); }
+        }
+
+        async function postComment() {
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const token = localStorage.getItem('mangakan_token');
+            try {
+                const res = await fetch(`/api/mangas/${currentMangaId}/comment`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ text })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    input.value = '';
+                    loadComments(); // Refresh list to show new comment!
+                }
+            } catch(e) { alert("Failed to post comment."); }
         }
 
         function renderChapterList() {
@@ -316,7 +396,6 @@
         function loadChapter(index) {
             currentChapterIndex = index;
             renderChapterList(); 
-            
             const chapter = chaptersData[index];
             const container = document.getElementById('pagesContainer');
             

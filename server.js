@@ -6,13 +6,11 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs'); 
 const jwt = require('jsonwebtoken'); 
-
-// ✨ NEW: Import Cloudinary Magic
 const { v2: cloudinary } = require('cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Let Render choose the port
+const PORT = process.env.PORT || 3000;
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('🔮 Connected to the MongoDB Magic Vault!'))
@@ -34,14 +32,10 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
-        folder: 'mangakan_vault', // It will create this folder in your Cloudinary!
-        allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp']
-    }
+    params: { folder: 'mangakan_vault', allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp'] }
 });
 const upload = multer({ storage: storage });
 
-// The upload fields
 const mangaUploadFields = upload.fields([{ name: 'coverArt', maxCount: 1 }, { name: 'thumbnailArt', maxCount: 1 }, { name: 'bannerArt', maxCount: 1 }]);
 const chapterUploadFields = upload.array('pages', 100); 
 const avatarUploadField = upload.single('avatar'); 
@@ -69,6 +63,8 @@ const mangaSchema = new mongoose.Schema({
     thumbnailArt: String,
     bannerArt: String,
     uploader: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, 
+    views: { type: Number, default: 0 }, // ✨ NEW: View Tracker
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // ✨ NEW: Like Tracker
     createdAt: { type: Date, default: Date.now }
 });
 const Manga = mongoose.model('Manga', mangaSchema);
@@ -81,6 +77,15 @@ const chapterSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 const Chapter = mongoose.model('Chapter', chapterSchema);
+
+// ✨ NEW: COMMENT BLUEPRINT
+const commentSchema = new mongoose.Schema({
+    mangaId: { type: mongoose.Schema.Types.ObjectId, ref: 'Manga', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    text: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+});
+const Comment = mongoose.model('Comment', commentSchema);
 
 // ==========================================
 // 🪄 API ENDPOINTS
@@ -128,13 +133,10 @@ app.post('/api/update-profile', avatarUploadField, async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { username, bio } = req.body;
         let updateData = { username, bio };
-        
-        // ✨ NOW SAVES THE CLOUDINARY SECURE URL
         if (req.file) updateData.avatarUrl = req.file.path; 
-        
         const updatedUser = await User.findByIdAndUpdate(decoded.userId, updateData, { new: true }).select('-password');
         res.json({ success: true, message: 'Profile updated!', user: updatedUser });
-    } catch (error) { res.status(500).json({ success: false, message: 'Server error during update' }); }
+    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
 app.get('/api/me/mangas', async (req, res) => {
@@ -180,27 +182,74 @@ app.post('/api/upload-manga', mangaUploadFields, async (req, res) => {
         if (!token) return res.status(401).json({ success: false, message: 'Must be logged in to summon!' });
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { title, description, genres } = req.body;
-        
-        // ✨ NOW SAVES THE CLOUDINARY SECURE URL
         const coverArtPath = req.files['coverArt'][0].path; 
-        
         const newManga = new Manga({ title, description, genres: JSON.parse(genres || '[]'), coverArt: coverArtPath, uploader: decoded.userId });
         await newManga.save();
         res.json({ success: true, message: 'Manga registered!', coverUrl: coverArtPath, mangaId: newManga._id });
-    } catch (error) { console.error(error); res.status(500).json({ success: false, message: 'Server error' }); }
+    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
 app.post('/api/upload-chapter', chapterUploadFields, async (req, res) => {
     try {
         const { mangaId, chapterNumber, title } = req.body;
-        
-        // ✨ NOW SAVES ARRAY OF CLOUDINARY SECURE URLS
         const pagesPaths = req.files ? req.files.map(file => file.path) : []; 
-        
         const newChapter = new Chapter({ mangaId, chapterNumber, title, pages: pagesPaths });
         await newChapter.save();
         res.json({ success: true, message: 'Chapter added!' });
-    } catch (error) { console.error(error); res.status(500).json({ success: false, message: 'Server error' }); }
+    } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
+});
+
+// ✨ NEW: INCREMENT VIEWS ✨
+app.post('/api/mangas/:id/view', async (req, res) => {
+    try {
+        await Manga.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
+        res.json({ success: true });
+    } catch (error) { res.status(500).json({ success: false }); }
+});
+
+// ✨ NEW: TOGGLE LIKE ✨
+app.post('/api/mangas/:id/like', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ success: false, message: 'Must be logged in!' });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        const manga = await Manga.findById(req.params.id);
+        const index = manga.likes.indexOf(decoded.userId);
+        let isLiked = false;
+        
+        if (index === -1) { manga.likes.push(decoded.userId); isLiked = true; } 
+        else { manga.likes.splice(index, 1); }
+        
+        await manga.save();
+        res.json({ success: true, isLiked, likesCount: manga.likes.length });
+    } catch (error) { res.status(500).json({ success: false }); }
+});
+
+// ✨ NEW: ADD COMMENT ✨
+app.post('/api/mangas/:id/comment', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ success: false, message: 'Must be logged in!' });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        const newComment = new Comment({ mangaId: req.params.id, user: decoded.userId, text: req.body.text });
+        await newComment.save();
+        
+        // Return the populated comment so frontend can show it instantly
+        const populatedComment = await Comment.findById(newComment._id).populate('user', 'username avatarUrl');
+        res.json({ success: true, comment: populatedComment });
+    } catch (error) { res.status(500).json({ success: false }); }
+});
+
+// ✨ NEW: GET ALL COMMENTS ✨
+app.get('/api/mangas/:id/comments', async (req, res) => {
+    try {
+        const comments = await Comment.find({ mangaId: req.params.id })
+                                      .populate('user', 'username avatarUrl')
+                                      .sort({ createdAt: -1 }); // Newest first
+        res.json({ success: true, comments });
+    } catch (error) { res.status(500).json({ success: false }); }
 });
 
 app.get('/api/mangas', async (req, res) => {
@@ -235,6 +284,7 @@ app.delete('/api/mangas/:id', async (req, res) => {
 
         await Manga.findByIdAndDelete(req.params.id);
         await Chapter.deleteMany({ mangaId: req.params.id });
+        await Comment.deleteMany({ mangaId: req.params.id }); // ✨ Clear comments too!
         res.json({ success: true, message: 'Manga banished to the void.' });
     } catch (error) { res.status(500).json({ success: false, message: 'Error deleting.' }); }
 });
