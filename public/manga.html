@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading ✨ Mangakan</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg-main: #fcfcfd; 
+            --bg-card: #ffffff; 
+            --primary: #ff9a9e; 
+            --accent: #a18cd1; 
+            --text-dark: #2d3142; 
+            --text-muted: #8c92a4; 
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #0f0f12; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 154, 158, 0.6); border-radius: 10px; border: 2px solid #0f0f12; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-dark); 
+            font-family: 'Nunito', sans-serif; 
+            display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;
+            background-image: radial-gradient(rgba(255, 154, 158, 0.08) 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+        
+        h1, h2, h3, nav a, .btn-primary, .logo, .sidebar-title, .ctrl-btn { font-family: 'Poppins', sans-serif; }
+
+        header { 
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); 
+            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid rgba(255, 154, 158, 0.1); 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02); 
+        }
+        .logo { font-size: 26px; font-weight: 800; background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; letter-spacing: -0.5px;}
+        nav ul { display: flex; list-style: none; gap: 25px; align-items: center; }
+        nav a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 15px; transition: var(--transition); }
+        nav a:hover { color: var(--text-dark); }
+        .nav-login { background: rgba(255, 154, 158, 0.15); padding: 8px 20px; border-radius: 20px; color: var(--primary) !important; font-weight: 800 !important; }
+        .nav-login:hover { background: var(--primary); color: white !important; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3); }
+
+        .reader-layout { display: flex; flex: 1; height: calc(100vh - 67px); }
+
+        .sidebar { 
+            width: 320px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            border-right: 2px solid rgba(255, 154, 158, 0.15); overflow-y: auto; padding: 30px 20px; 
+            display: flex; flex-direction: column; box-shadow: 5px 0 30px rgba(161, 140, 209, 0.05);
+        }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { border: 2px solid #fff; }
+        
+        .sidebar-cover { width: 100%; height: 180px; object-fit: cover; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 15px 30px rgba(161, 140, 209, 0.2); border: 3px solid #fff; }
+        .sidebar-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; line-height: 1.2; color: var(--text-dark); }
+        .sidebar-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; font-weight: 600;}
+        
+        /* ✨ SUBSCRIBE BUTTON STYLES ✨ */
+        .btn-subscribe-sidebar {
+            width: 100%; background: rgba(255, 154, 158, 0.1); color: var(--primary);
+            padding: 12px; border-radius: 14px; font-weight: 800; font-size: 14px; border: 2px solid transparent;
+            cursor: pointer; transition: var(--transition); margin-bottom: 25px; font-family: 'Nunito';
+        }
+        .btn-subscribe-sidebar:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,154,158,0.3);}
+        .btn-subscribe-sidebar.active { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 5px 15px rgba(255,154,158,0.4); }
+
+        .chapter-list { display: flex; flex-direction: column; gap: 12px; }
+        .chapter-btn { 
+            background: var(--bg-main); padding: 16px 20px; border-radius: 16px; font-weight: 800; 
+            color: var(--text-dark); text-align: left; cursor: pointer; border: 2px solid transparent; 
+            transition: var(--transition); display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02); font-family: 'Nunito'; font-size: 15px;
+        }
+        .chapter-btn:hover { background: rgba(255,154,158,0.08); border-color: rgba(255,154,158,0.3); transform: translateY(-2px); }
+        .chapter-btn.active { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 8px 20px rgba(255,154,158,0.4); border-color: transparent; }
+
+        #creatorControls { margin-top: 25px; display: none; padding-top: 20px; border-top: 2px dashed rgba(161, 140, 209, 0.2);} 
+        .btn-add-chapter { 
+            width: 100%; background: var(--text-dark); color: white; padding: 15px; 
+            border-radius: 16px; font-weight: 800; font-size: 15px; border: none; cursor: pointer; 
+            display: flex; justify-content: center; align-items: center; gap: 10px; transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(45, 49, 66, 0.15);
+        }
+        .btn-add-chapter:hover { background: linear-gradient(135deg, var(--primary), var(--accent)); transform: translateY(-3px); box-shadow: 0 12px 25px rgba(255, 154, 158, 0.3); }
+
+        .main-reader { 
+            flex: 1; background: #0a0a0c; overflow-y: auto; display: flex; 
+            flex-direction: column; align-items: center; position: relative; scroll-behavior: smooth;
+        }
+        .pages-container { 
+            width: 100%; max-width: 750px; display: flex; flex-direction: column; 
+            align-items: center; min-height: 80vh; background: #000;
+            box-shadow: 0 0 60px rgba(0,0,0,0.8); 
+        }
+        .pages-container img { width: 100%; display: block; margin: 0; }
+        
+        .reader-controls { 
+            width: 100%; max-width: 750px; display: flex; justify-content: space-between; 
+            padding: 40px 20px 80px 20px; background: #0a0a0c;
+        }
+        .ctrl-btn { 
+            background: rgba(255,255,255,0.08); color: white; padding: 15px 35px; 
+            border-radius: 30px; font-weight: 800; font-size: 16px; text-decoration: none; 
+            border: 2px solid transparent; cursor: pointer; transition: var(--transition); backdrop-filter: blur(5px);
+        }
+        .ctrl-btn:hover:not(:disabled) { background: rgba(255, 154, 158, 0.2); border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255, 154, 158, 0.2); }
+        .ctrl-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+        .loading-text { color: rgba(255,255,255,0.5); padding: 100px 20px; font-weight: 700; font-size: 18px; text-align: center; }
+
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(10, 10, 15, 0.8); backdrop-filter: blur(8px); 
+            display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; animation: fadeIn 0.3s forwards;
+        }
+        .modal-content { 
+            background: var(--bg-card); padding: 40px; border-radius: 32px; width: 90%; max-width: 500px; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3); transform: scale(0.95); animation: popUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+        }
+        .modal-content h2 { font-family: 'Poppins'; color: var(--text-dark); margin-bottom: 25px; font-weight: 800;}
+        .modal-content input { 
+            width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 16px; 
+            border: 2px solid rgba(161, 140, 209, 0.2); font-family: 'Nunito'; font-size: 15px; outline: none; transition: var(--transition);
+        }
+        .modal-content input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(255, 154, 158, 0.15); }
+
+        .upload-box-cute { background: rgba(161, 140, 209, 0.05); padding: 30px 20px; border-radius: 20px; border: 2px dashed rgba(161, 140, 209, 0.3); text-align: center; margin-bottom: 25px; transition: var(--transition);}
+        .upload-box-cute:hover { border-color: var(--primary); background: rgba(255, 154, 158, 0.05); }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes popUp { to { transform: scale(1); } }
+
+        @media (max-width: 850px) {
+            .reader-layout { flex-direction: column; height: auto; min-height: calc(100vh - 67px); }
+            .sidebar { width: 100%; max-height: 300px; border-right: none; border-bottom: 3px solid rgba(255, 154, 158, 0.2); padding: 20px;}
+            .sidebar-cover { display: none; }
+            .main-reader { height: 100vh; }
+        }
+    </style>
+</head>
+<body>
+   
+    <header>
+        <div class="logo" onclick="window.location.href='index.html'">Mangakan</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="login.html" class="nav-login" id="navBtn">✨ Sign In</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="reader-layout">
+        <aside class="sidebar">
+            <img src="" id="sbCover" class="sidebar-cover" alt="Cover">
+            <h1 class="sidebar-title" id="sbTitle">Loading...</h1>
+            <p class="sidebar-desc" id="sbDesc"></p>
+            
+            <button class="btn-subscribe-sidebar" id="btnSubscribe" onclick="toggleFavorite()" style="display:none;">
+                ✨ Subscribe
+            </button>
+
+            <h3 style="margin-bottom: 12px; font-size: 13px; color: var(--accent); letter-spacing: 1px;">EPISODES</h3>
+            <div class="chapter-list" id="chapterList"></div>
+
+            <div id="creatorControls">
+                <button class="btn-add-chapter" onclick="document.getElementById('chapterModal').style.display='flex'">
+                    ➕ Add Chapter
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-reader" id="readerScroll">
+            <div class="pages-container" id="pagesContainer">
+                <div class="loading-text">Select a chapter to start reading...</div>
+            </div>
+            <div class="reader-controls">
+                <button class="ctrl-btn" id="btnPrev" disabled>⬅️ Previous</button>
+                <button class="ctrl-btn" id="btnNext" disabled>Next ➡️</button>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="chapterModal">
+        <div class="modal-content">
+            <h2>✨ Upload New Chapter</h2>
+            <input type="number" id="chNumber" placeholder="Chapter Number (e.g. 1)" required>
+            <input type="text" id="chTitle" placeholder="Chapter Title (e.g. The Beginning)">
+            
+            <div class="upload-box-cute">
+                <p style="font-weight: 800; color: var(--primary); margin-bottom: 10px; font-family: 'Poppins';">Select Manga Pages</p>
+                <input type="file" id="chPages" accept="image/*" multiple required style="border: none; padding: 0; box-shadow: none;">
+            </div>
+
+            <button class="btn-add-chapter" id="uploadBtn" onclick="submitChapter()" style="width: 100%; padding: 18px; font-size: 16px;">🚀 Publish Chapter</button>
+            <button style="width: 100%; background: none; border: none; margin-top: 15px; color: var(--text-muted); cursor: pointer; font-weight: 700; font-family: 'Nunito';" onclick="document.getElementById('chapterModal').style.display='none'">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        let currentMangaId = new URLSearchParams(window.location.search).get('id');
+        let chaptersData = [];
+        let currentChapterIndex = -1;
+        let currentUserId = null;
+        let currentUserFavorites = []; // ✨ To track subscriptions
+
+        window.addEventListener('load', async () => {
+            const token = localStorage.getItem('mangakan_token');
+            if (token) {
+                document.getElementById('navBtn').innerHTML = '✨ My Profile';
+                document.getElementById('navBtn').href = 'profile.html';
+                
+                try {
+                    const meRes = await fetch('http://localhost:3000/api/me', { headers: { 'Authorization': `Bearer ${token}` }});
+                    const meData = await meRes.json();
+                    if (meData.success) {
+                        currentUserId = meData.user._id;
+                        currentUserFavorites = meData.user.favorites || [];
+                    }
+                } catch(e) {}
+            }
+
+            if (!currentMangaId) return alert("Manga ID missing!");
+            loadMangaData();
+        });
+
+        async function loadMangaData() {
+            try {
+                const res = await fetch(`http://localhost:3000/api/mangas/${currentMangaId}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    const manga = data.manga;
+                    chaptersData = data.chapters;
+
+                    document.getElementById('sbCover').src = `http://localhost:3000${manga.coverArt}`;
+                    document.getElementById('sbTitle').innerText = manga.title;
+                    document.getElementById('sbDesc').innerText = manga.description || '';
+
+                    // ✨ Setup Subscribe Button logic if logged in
+                    if (currentUserId) {
+                        const btnSub = document.getElementById('btnSubscribe');
+                        btnSub.style.display = 'block';
+                        
+                        if (currentUserFavorites.includes(currentMangaId)) {
+                            btnSub.classList.add('active');
+                            btnSub.innerHTML = '💖 Subscribed';
+                        }
+                    }
+
+                    if (currentUserId && manga.uploader === currentUserId) {
+                        document.getElementById('creatorControls').style.display = 'block';
+                    }
+
+                    renderChapterList();
+
+                    if (chaptersData.length > 0) {
+                        loadChapter(0);
+                    } else {
+                        document.getElementById('pagesContainer').innerHTML = '<div class="loading-text">No chapters have been summoned yet.</div>';
+                    }
+                }
+            } catch(e) { console.error("Failed to load manga."); }
+        }
+
+        // ✨ TOGGLE FAVORITE FUNCTION ✨
+        async function toggleFavorite() {
+            const token = localStorage.getItem('mangakan_token');
+            if (!token) return window.location.href = 'login.html';
+
+            const btnSub = document.getElementById('btnSubscribe');
+            
+            try {
+                const res = await fetch('http://localhost:3000/api/favorites/toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ mangaId: currentMangaId })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    if (data.isFavorited) {
+                        btnSub.classList.add('active');
+                        btnSub.innerHTML = '💖 Subscribed';
+                        currentUserFavorites.push(currentMangaId);
+                    } else {
+                        btnSub.classList.remove('active');
+                        btnSub.innerHTML = '✨ Subscribe';
+                        currentUserFavorites = currentUserFavorites.filter(id => id !== currentMangaId);
+                    }
+                }
+            } catch(e) {
+                alert("Server magic fizzled out!");
+            }
+        }
+
+        function renderChapterList() {
+            const list = document.getElementById('chapterList');
+            list.innerHTML = '';
+            chaptersData.forEach((ch, index) => {
+                const btn = document.createElement('button');
+                btn.className = `chapter-btn ${index === currentChapterIndex ? 'active' : ''}`;
+                btn.innerHTML = `<span>Ch. ${ch.chapterNumber}</span> <span>${ch.title || ''}</span>`;
+                btn.onclick = () => loadChapter(index);
+                list.appendChild(btn);
+            });
+        }
+
+        function loadChapter(index) {
+            currentChapterIndex = index;
+            renderChapterList(); 
+            
+            const chapter = chaptersData[index];
+            const container = document.getElementById('pagesContainer');
+            
+            if (chapter.pages && chapter.pages.length > 0) {
+                container.innerHTML = chapter.pages.map(img => `<img src="http://localhost:3000${img}" loading="lazy">`).join('');
+            } else {
+                container.innerHTML = '<div class="loading-text">No pages found in this chapter!</div>';
+            }
+
+            document.getElementById('readerScroll').scrollTo(0,0);
+            document.getElementById('btnPrev').disabled = (index === 0);
+            document.getElementById('btnPrev').onclick = () => loadChapter(index - 1);
+            document.getElementById('btnNext').disabled = (index === chaptersData.length - 1);
+            document.getElementById('btnNext').onclick = () => loadChapter(index + 1);
+        }
+
+        async function submitChapter() {
+            const num = document.getElementById('chNumber').value;
+            const title = document.getElementById('chTitle').value;
+            const pages = document.getElementById('chPages').files;
+            
+            if(!num || pages.length === 0) return alert("You need a chapter number and at least one image page!");
+
+            const btn = document.getElementById('uploadBtn');
+            btn.innerText = "⏳ Uploading Magic...";
+
+            const formData = new FormData();
+            formData.append('mangaId', currentMangaId);
+            formData.append('chapterNumber', num);
+            formData.append('title', title);
+            for(let i=0; i<pages.length; i++) formData.append('pages', pages[i]);
+
+            try {
+                const res = await fetch('http://localhost:3000/api/upload-chapter', { method: 'POST', body: formData });
+                const data = await res.json();
+                if(data.success) {
+                    document.getElementById('chapterModal').style.display='none';
+                    loadMangaData(); 
+                    btn.innerText = "🚀 Publish Chapter";
+                    document.getElementById('chNumber').value = '';
+                    document.getElementById('chTitle').value = '';
+                    document.getElementById('chPages').value = '';
+                }
+            } catch(e) { 
+                alert("Upload failed. Is the server running?"); 
+                btn.innerText = "🚀 Publish Chapter"; 
+            }
+        }
+    </script>
+</body>
+</html>

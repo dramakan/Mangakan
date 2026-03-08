@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover ✨ Mangakan</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- PREMIUM & CUTE CSS VARIABLES --- */
+        :root { 
+            --bg-main: #fcfcfd; 
+            --bg-card: #ffffff; 
+            --primary: #ff9a9e; 
+            --accent: #a18cd1; 
+            --text-dark: #2d3142; 
+            --text-muted: #8c92a4; 
+            --shadow-subtle: 0 12px 30px rgba(161, 140, 209, 0.08); 
+            --shadow-hover: 0 20px 40px rgba(255, 154, 158, 0.18);
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 154, 158, 0.6); border-radius: 10px; border: 2px solid var(--bg-main); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        body { 
+            background-color: var(--bg-main); color: var(--text-dark); 
+            font-family: 'Nunito', sans-serif; 
+            background-image: radial-gradient(rgba(255, 154, 158, 0.08) 2px, transparent 2px); 
+            background-size: 30px 30px; 
+            overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column;
+        }
+        h1, h2, h3, .logo, nav a { font-family: 'Poppins', sans-serif; }
+
+        /* --- NAVBAR --- */
+        header { 
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); 
+            padding: 18px 5%; display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid rgba(255, 154, 158, 0.1); 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02); 
+        }
+        .logo { font-size: 28px; font-weight: 800; background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; letter-spacing: -0.5px;}
+        nav ul { display: flex; list-style: none; gap: 35px; align-items: center; }
+        nav a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 16px; transition: var(--transition); position: relative;}
+        nav a:hover { color: var(--text-dark); }
+        .nav-login { background: rgba(255, 154, 158, 0.15); padding: 8px 20px; border-radius: 20px; color: var(--primary) !important; font-weight: 800 !important; }
+        .nav-login:hover { background: var(--primary); color: white !important; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3); }
+
+        /* --- SEARCH HUB --- */
+        main { padding: 60px 5%; max-width: 1200px; margin: 0 auto; flex: 1; width: 100%;}
+        
+        .search-hero { text-align: center; margin-bottom: 50px; position: relative;}
+        .search-title { font-size: 42px; font-weight: 800; color: var(--text-dark); margin-bottom: 15px; }
+        .search-title span { background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .search-bar-container { max-width: 700px; margin: 0 auto; position: relative; }
+        .search-input { 
+            width: 100%; padding: 20px 30px; border-radius: 40px; border: 3px solid rgba(161, 140, 209, 0.2); 
+            background: var(--bg-card); color: var(--text-dark); font-family: 'Nunito', sans-serif; 
+            font-size: 18px; outline: none; transition: var(--transition); box-shadow: var(--shadow-subtle);
+        }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 15px 35px rgba(255, 154, 158, 0.2); }
+        
+        .search-icon { position: absolute; right: 25px; top: 50%; transform: translateY(-50%); font-size: 22px; pointer-events: none; }
+
+        /* --- GENRE FILTERS --- */
+        .genre-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 50px; }
+        .filter-btn { 
+            background: var(--bg-card); color: var(--text-muted); padding: 10px 24px; border-radius: 30px; 
+            font-weight: 800; font-size: 14px; border: 2px solid rgba(161, 140, 209, 0.15); cursor: pointer; 
+            transition: var(--transition); font-family: 'Nunito'; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+        .filter-btn.active { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border-color: transparent; box-shadow: 0 8px 20px rgba(255,154,158,0.4); }
+
+        /* --- GRID SECTIONS --- */
+        .results-info { font-size: 18px; font-weight: 800; color: var(--text-dark); margin-bottom: 25px; border-bottom: 2px dashed rgba(255, 154, 158, 0.3); padding-bottom: 10px;}
+        
+        .manga-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; margin-bottom: 50px; }
+        .manga-card { background: var(--bg-card); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-subtle); border: 2px solid #fff; transition: var(--transition); display: flex; flex-direction: column; cursor: pointer;}
+        .manga-card:hover { transform: translateY(-8px) rotate(1deg); box-shadow: var(--shadow-hover); border-color: rgba(255,154,158,0.4); }
+        .card-img-wrapper { padding: 8px 8px 0 8px; }
+        .manga-card img { width: 100%; height: 280px; object-fit: cover; border-radius: 14px; transition: var(--transition);}
+        .manga-card:hover img { transform: scale(1.03); }
+        .manga-info { padding: 15px 12px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .manga-title { font-size: 16px; font-weight: 800; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-dark); }
+        .manga-genre-tags { font-size: 12px; color: var(--primary); font-weight: 700; background: rgba(255, 154, 158, 0.1); display: inline-block; padding: 4px 10px; border-radius: 12px; margin: 0 auto;}
+
+        .empty-state { text-align: center; padding: 60px; color: var(--text-muted); font-weight: 700; background: rgba(255, 154, 158, 0.05); border-radius: 24px; border: 2px dashed rgba(255, 154, 158, 0.3); font-size: 18px;}
+
+        footer { background: #ffffff; padding: 40px 5%; text-align: center; border-top: 1px solid rgba(0,0,0,0.03); color: var(--text-muted); font-weight: 600; font-size: 14px; margin-top: auto;}
+        footer a { color: var(--accent); text-decoration: none; margin: 0 12px; transition: var(--transition); }
+        footer a:hover { color: var(--primary); }
+
+        @media (max-width: 850px) {
+            header { flex-direction: column; padding: 15px 5%; gap: 12px; }
+            nav ul { flex-wrap: wrap; justify-content: center; gap: 10px 20px; }
+            .search-title { font-size: 32px; }
+            .manga-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;}
+            .manga-card img { height: 220px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="window.location.href='index.html'">Mangakan</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="discover.html" style="color: var(--primary); font-weight: 800;">✨ Discover</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="login.html" class="nav-login" id="navBtn">✨ Sign In</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="search-hero">
+            <h1 class="search-title">Explore the <span>Library</span></h1>
+            
+            <div class="search-bar-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search by manga title..." oninput="triggerSearch()">
+                <div class="search-icon">🔍</div>
+            </div>
+        </div>
+
+        <div class="genre-filters" id="genreFilters">
+            <button class="filter-btn active" onclick="setGenre('All')">All Magic</button>
+            <button class="filter-btn" onclick="setGenre('Romance')">Romance</button>
+            <button class="filter-btn" onclick="setGenre('Action')">Action</button>
+            <button class="filter-btn" onclick="setGenre('Fantasy')">Fantasy</button>
+            <button class="filter-btn" onclick="setGenre('Slice of Life')">Slice of Life</button>
+            <button class="filter-btn" onclick="setGenre('Drama')">Drama</button>
+            <button class="filter-btn" onclick="setGenre('Sci-Fi')">Sci-Fi</button>
+        </div>
+
+        <div class="results-info" id="resultsText">Summoning all scrolls...</div>
+        
+        <div class="manga-grid" id="searchGrid">
+            </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mangakan. Crafted with care by Karash.</p>
+        <p style="margin-top: 15px;"><a href="privacy.html">Privacy</a> • <a href="terms.html">Terms</a> • <a href="contact.html">Contact</a></p>
+    </footer>
+
+    <script>
+        let currentSearchQuery = '';
+        let currentGenre = 'All';
+        let searchTimeout = null;
+
+        window.addEventListener('load', () => {
+            // Setup Navbar
+            const token = localStorage.getItem('mangakan_token');
+            if (token) {
+                document.getElementById('navBtn').innerHTML = '✨ My Profile';
+                document.getElementById('navBtn').href = 'profile.html';
+            }
+            // Fetch initial library
+            performSearch();
+        });
+
+        // Detect typing in the search bar
+        function triggerSearch() {
+            currentSearchQuery = document.getElementById('searchInput').value;
+            
+            // Add a tiny delay so we don't spam the server on every single keystroke
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch();
+            }, 300);
+        }
+
+        // Detect clicking a genre button
+        function setGenre(genreName) {
+            currentGenre = genreName;
+            
+            // Update UI to highlight the active button
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                if(btn.innerText === genreName || (genreName === 'All' && btn.innerText === 'All Magic')) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            performSearch();
+        }
+
+        // The actual Search Spell
+        async function performSearch() {
+            const grid = document.getElementById('searchGrid');
+            const resultsText = document.getElementById('resultsText');
+            
+            try {
+                // Build the URL with our search queries
+                const url = `http://localhost:3000/api/search?q=${encodeURIComponent(currentSearchQuery)}&genre=${encodeURIComponent(currentGenre)}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    grid.innerHTML = '';
+                    
+                    if (data.mangas.length === 0) {
+                        resultsText.innerText = "No magic found 😔";
+                        grid.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;">No scrolls match your search. Try different keywords or genres!</div>`;
+                        return;
+                    }
+
+                    resultsText.innerText = `Found ${data.mangas.length} scroll${data.mangas.length > 1 ? 's' : ''}`;
+
+                    data.mangas.forEach(manga => {
+                        // Just show the first genre tag to keep it cute
+                        const firstTag = manga.genres && manga.genres.length > 0 ? manga.genres[0] : 'Magic';
+
+                        grid.innerHTML += `
+                            <div class="manga-card" onclick="window.location.href='manga.html?id=${manga._id}'">
+                                <div class="card-img-wrapper">
+                                    <img src="http://localhost:3000${manga.coverArt}" alt="${manga.title}">
+                                </div>
+                                <div class="manga-info">
+                                    <div class="manga-title">${manga.title}</div>
+                                    <div class="manga-genre-tags">${firstTag}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch(e) {
+                console.error(e);
+                resultsText.innerText = "The connection to the vault was interrupted.";
+            }
+        }
+    </script>
+</body>
+</html>

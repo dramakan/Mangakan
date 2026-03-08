@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Privacy Scroll ✨ Mangakan</title>
+    <meta name="description" content="The magical privacy scroll for the Mangakan comic realm.">
+    <meta name="author" content="Karash">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- PREMIUM & CUTE CSS VARIABLES --- */
+        :root {
+            --bg-main: #fcfcfd; 
+            --bg-card: #ffffff;
+            --primary: #ff9a9e; 
+            --accent: #a18cd1;  
+            --text-dark: #2d3142; 
+            --text-muted: #8c92a4;
+            --shadow-subtle: 0 12px 30px rgba(161, 140, 209, 0.08);
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* --- MAGIC CHARACTER CURSOR --- */
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            font-family: 'Nunito', sans-serif; 
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            background-image: radial-gradient(rgba(255, 154, 158, 0.05) 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+
+        h1, h2, h3, .logo, nav a, .policy-title {
+            font-family: 'Poppins', sans-serif;
+        }
+
+     
+        /* --- THE ANIMATING CHARACTER (KUROMI) --- */
+        #mascot {
+            position: fixed; top: -100px; left: -100px; 
+            width: 75px; height: 75px; 
+            background: transparent; pointer-events: none; 
+            z-index: 9998; display: flex; justify-content: center; align-items: center;
+            will-change: transform, left, top;
+            animation: breatheCharacter 2s ease-in-out infinite alternate;
+        }
+        
+        #character-sprite {
+            width: 100%; height: 100%; object-fit: contain;
+            transition: transform 0.3s ease, filter 0.3s ease; 
+            filter: drop-shadow(0 8px 15px rgba(255, 154, 158, 0.3));
+        }
+
+        #mascot-trail {
+            position: absolute; width: 140%; height: 140%;
+            display: none; justify-content: center; align-items: center;
+            font-size: 32px; animation: trailStars 1s linear infinite;
+            z-index: -1;
+        }
+
+        /* Mascot States */
+        .character-moving #character-sprite { transform: scale(1.02) rotate(5deg); filter: drop-shadow(0 5px 15px rgba(255, 154, 158, 0.4)); }
+        .character-interact #character-sprite { transform: scale(1.15) translateY(-5px); filter: drop-shadow(0 0 15px var(--primary)) brightness(1.1); }
+        .character-glide #character-sprite { transform: rotate(-15deg) translateY(-8px); filter: drop-shadow(0 0 15px var(--accent)); }
+        .character-glide #mascot-trail { display: flex; }
+
+        @media (max-width: 850px) {
+            #mascot { display: none; }
+            * { cursor: auto !important; /* Restore normal cursor on mobile */ }
+        }
+        /* --- LOADING SCREEN --- */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg-main); display: flex; justify-content: center; align-items: center; flex-direction: column;
+            z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s;
+        }
+        .magic-orb {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent)); animation: breatheOrb 2s ease-in-out infinite;
+        }
+        .loader-text { margin-top: 25px; font-weight: 700; font-size: 16px; letter-spacing: 1.5px; color: var(--text-dark); animation: pulseText 2s infinite; }
+
+        /* --- NAVBAR --- */
+        header {
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px);
+            padding: 18px 5%; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid rgba(255, 154, 158, 0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        .logo { font-size: 28px; font-weight: 800; background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; cursor: pointer; }
+        nav ul { display: flex; list-style: none; gap: 35px; }
+        nav a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 16px; transition: var(--transition); position: relative; }
+        nav a:hover { color: var(--text-dark); }
+        nav a::after {
+            content: '✨'; position: absolute; font-size: 10px; top: -10px; right: -10px; opacity: 0; transition: var(--transition); transform: scale(0);
+        }
+        nav a:hover::after { opacity: 1; transform: scale(1); } 
+
+        /* --- ✨ PRIVACY POLICY SPECIFIC STYLES ✨ --- */
+        main { padding: 60px 5%; max-width: 1000px; margin: 0 auto; }
+        
+        .policy-wrapper {
+            background: var(--bg-card);
+            border-radius: 32px;
+            padding: 60px 10%;
+            box-shadow: var(--shadow-subtle);
+            border: 2px solid rgba(255, 154, 158, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .policy-wrapper::before {
+            content: '🌸'; position: absolute; top: 30px; right: 40px; font-size: 60px; opacity: 0.15; animation: floatHero 5s infinite alternate;
+        }
+        .policy-wrapper::after {
+            content: '✨'; position: absolute; bottom: 40px; left: 40px; font-size: 40px; opacity: 0.2; animation: floatHero 4s infinite alternate-reverse;
+        }
+
+        .policy-header { text-align: center; margin-bottom: 40px; border-bottom: 2px dashed rgba(161, 140, 209, 0.2); padding-bottom: 30px;}
+        
+        .policy-title {
+            font-size: 42px; margin-bottom: 10px; font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        
+        .policy-update { color: var(--text-muted); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+
+        .policy-content h2 {
+            color: var(--text-dark); font-size: 24px; margin-top: 40px; margin-bottom: 15px;
+            display: inline-block; position: relative;
+        }
+        
+        .policy-content p {
+            color: var(--text-muted); font-size: 17px; line-height: 1.8; margin-bottom: 20px; font-weight: 600;
+        }
+        
+        .policy-content ul { list-style: none; margin-left: 10px; margin-bottom: 30px; }
+        .policy-content li {
+            color: var(--text-muted); font-size: 17px; line-height: 1.8; margin-bottom: 12px; font-weight: 600;
+            position: relative; padding-left: 30px;
+        }
+        .policy-content li::before {
+            content: '✨'; position: absolute; left: 0; top: 2px; font-size: 16px;
+        }
+
+        .highlight-box {
+            background: rgba(161, 140, 209, 0.05); border-left: 4px solid var(--accent);
+            padding: 20px; border-radius: 0 16px 16px 0; margin: 20px 0;
+        }
+
+        /* --- FOOTER --- */
+        footer { background: #ffffff; padding: 40px 5%; text-align: center; border-top: 1px solid rgba(0,0,0,0.03); color: var(--text-muted); font-weight: 600; font-size: 14px; margin-top: 60px; }
+        footer a { color: var(--accent); text-decoration: none; margin: 0 12px; transition: var(--transition); }
+        footer a:hover { color: var(--primary); }
+
+        /* --- ANIMATIONS --- */
+        @keyframes breatheCharacter { 0% { transform: scale(1); } 100% { transform: scale(1.04) translateY(-2px); } }
+        @keyframes breatheOrb { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 154, 158, 0.4); } 50% { transform: scale(1.15); box-shadow: 0 0 40px rgba(161, 140, 209, 0.6); } }
+        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes floatHero { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes trailStars { 0% { transform: scale(1) rotate(0deg); opacity: 0.8; } 50% { transform: scale(1.4) rotate(180deg); opacity: 0; } 100% { transform: scale(1.1) rotate(360deg); opacity: 0; } }
+
+        /* --- MOBILE ALIGNMENT --- */
+        @media (max-width: 850px) {
+            header { flex-direction: column; padding: 15px 5%; gap: 12px; }
+            nav { width: 100%; }
+            nav ul { flex-wrap: wrap; justify-content: center; gap: 10px 20px; }
+            
+            main { padding: 30px 5%; }
+            .policy-wrapper { padding: 40px 20px; border-radius: 20px; }
+            .policy-title { font-size: 32px; }
+            .policy-content h2 { font-size: 20px; }
+            .policy-content p, .policy-content li { font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+     
+
+    <div id="loader">
+        <div class="magic-orb"></div>
+        <div class="loader-text">Unrolling the Scroll...</div>
+    </div>
+
+    <header>
+        <div class="logo" onclick="window.location.href='index.html'">Mangakan</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#">Discover</a></li>
+                <li><a href="#">Favorites</a></li>
+                <li><a href="#">Genres</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="policy-wrapper">
+            <div class="policy-header">
+                <h1 class="policy-title">Our Magical Privacy Scroll</h1>
+                <p class="policy-update">Last Enchanted: March 2026</p>
+            </div>
+
+            <div class="policy-content">
+                <h2>🌸 Welcome to the Realm!</h2>
+                <p>Hello there, traveler! We are so happy you've entered the premium comic realm of Mangakan. Because we value our readers and creators deeply, protecting your personal magic (data) is super important to us! This scroll explains how we collect, use, and protect your information while you read and explore.</p>
+
+                <h2>📜 The Information We Gather</h2>
+                <p>When you wander through our manga pages or summon a new story to our library, our magical system automatically notes down a few things to make your experience better:</p>
+                <ul>
+                    <li><strong>Your Magical Signature:</strong> Basic details like your IP address, browser type, and the device you are using to visit us.</li>
+                    <li><strong>Your Journey Paths:</strong> Which chapters you read, how long you stay, and the genres you love the most.</li>
+                    <li><strong>Creator Details:</strong> If you use the "Publish Manga" feature, we store the beautiful art, descriptions, and titles you share with the realm!</li>
+                </ul>
+
+                <h2>🍪 Magical Treats (Cookies)</h2>
+                <p>Like any cozy magical cafe, we use "cookies"! These aren't the chocolate chip kind, but rather tiny digital crumbs saved on your device. They help us remember your reading progress, keep you logged in, and make the website load fast and smooth. By staying in our realm, you agree to share these little treats with us!</p>
+
+                <div class="highlight-box">
+                    <h2>🧚‍♀️ Our Guild Partners (AdSense)</h2>
+                    <p>To keep the Mangakan realm entirely free for everyone, we partner with friendly merchants like <strong>Google AdSense</strong>. They place advertisement banners in our designated spaces.</p>
+                    <p>Please note: Third-party vendors, including Google, use cookies to serve ads based on your prior visits to our website or other places on the magical web. You can always opt out of personalized advertising by visiting your <a href="https://www.google.com/settings/ads" target="_blank" style="color: var(--primary);">Google Ads Settings</a>. We promise to keep the ads subtle so they don't ruin your reading vibe!</p>
+                </div>
+
+                <h2>🛡️ Our Protective Barrier</h2>
+                <p>We cast the strongest barrier spells we know to keep your information safe from dark wizards and data goblins. We do not sell your personal information. However, please remember that no spell is 100% unbreakable on the internet, so always share your secrets wisely!</p>
+
+                <h2>💌 Send Us a Messenger Bird</h2>
+                <p>Got questions about this scroll? Want to know more about how we handle your data? Feel free to reach out to the Guildmaster (Karash) anytime!</p>
+                <p><strong>Email us at:</strong> magic@mangakan.site (Placeholder)</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mangakan. Crafted with care by Karash.</p>
+        <p style="margin-top: 15px;"><a href="privacy.html">Privacy</a> • <a href="terms.html">Terms</a> • <a href="creator.html">Creators</a></p>
+    </footer>
+
+    <script>
+      
+        // --- LOADING SCREEN ---
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
+            }, 1000); 
+        });
+    </script>
+</body>
+</html>
