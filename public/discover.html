@@ -201,7 +201,7 @@
             
             try {
                 // Build the URL with our search queries
-                const url = `http://localhost:3000/api/search?q=${encodeURIComponent(currentSearchQuery)}&genre=${encodeURIComponent(currentGenre)}`;
+                const url = `/api/search?q=${encodeURIComponent(currentSearchQuery)}&genre=${encodeURIComponent(currentGenre)}`;
                 
                 const response = await fetch(url);
                 const data = await response.json();
@@ -224,7 +224,7 @@
                         grid.innerHTML += `
                             <div class="manga-card" onclick="window.location.href='manga.html?id=${manga._id}'">
                                 <div class="card-img-wrapper">
-                                    <img src="http://localhost:3000${manga.coverArt}" alt="${manga.title}">
+                                    <img src="${manga.coverArt}" alt="${manga.title}">
                                 </div>
                                 <div class="manga-info">
                                     <div class="manga-title">${manga.title}</div>

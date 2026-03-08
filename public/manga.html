@@ -218,7 +218,7 @@
                 document.getElementById('navBtn').href = 'profile.html';
                 
                 try {
-                    const meRes = await fetch('http://localhost:3000/api/me', { headers: { 'Authorization': `Bearer ${token}` }});
+                    const meRes = await fetch('/api/me', { headers: { 'Authorization': `Bearer ${token}` }});
                     const meData = await meRes.json();
                     if (meData.success) {
                         currentUserId = meData.user._id;
@@ -233,14 +233,14 @@
 
         async function loadMangaData() {
             try {
-                const res = await fetch(`http://localhost:3000/api/mangas/${currentMangaId}`);
+                const res = await fetch(`/api/mangas/${currentMangaId}`);
                 const data = await res.json();
 
                 if (data.success) {
                     const manga = data.manga;
                     chaptersData = data.chapters;
 
-                    document.getElementById('sbCover').src = `http://localhost:3000${manga.coverArt}`;
+                    document.getElementById('sbCover').src = `${manga.coverArt}`;
                     document.getElementById('sbTitle').innerText = manga.title;
                     document.getElementById('sbDesc').innerText = manga.description || '';
 
@@ -278,7 +278,7 @@
             const btnSub = document.getElementById('btnSubscribe');
             
             try {
-                const res = await fetch('http://localhost:3000/api/favorites/toggle', {
+                const res = await fetch('/api/favorites/toggle', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ mangaId: currentMangaId })
@@ -321,7 +321,7 @@
             const container = document.getElementById('pagesContainer');
             
             if (chapter.pages && chapter.pages.length > 0) {
-                container.innerHTML = chapter.pages.map(img => `<img src="http://localhost:3000${img}" loading="lazy">`).join('');
+                container.innerHTML = chapter.pages.map(img => `<img src="${img}" loading="lazy">`).join('');
             } else {
                 container.innerHTML = '<div class="loading-text">No pages found in this chapter!</div>';
             }
@@ -350,7 +350,7 @@
             for(let i=0; i<pages.length; i++) formData.append('pages', pages[i]);
 
             try {
-                const res = await fetch('http://localhost:3000/api/upload-chapter', { method: 'POST', body: formData });
+                const res = await fetch('/api/upload-chapter', { method: 'POST', body: formData });
                 const data = await res.json();
                 if(data.success) {
                     document.getElementById('chapterModal').style.display='none';
