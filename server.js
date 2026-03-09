@@ -431,5 +431,47 @@ app.get('/api/search', async (req, res) => {
         res.json({ success: true, mangas });
     } catch (error) { res.status(500).json({ success: false, message: 'Search magic failed.' }); }
 });
+// 👑 ✨ NEW: GUILDMASTER DASHBOARD STATS ✨ 👑
+app.get('/api/admin/stats', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ success: false, message: 'No key' });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await User.findById(decoded.userId);
+        if (!user || !user.isAdmin) return res.status(403).json({ success: false, message: 'Not a Guildmaster!' });
+
+        const totalUsers = await User.countDocuments();
+        const totalMangas = await Manga.countDocuments();
+        
+        const allMangas = await Manga.find().sort({ createdAt: -1 });
+        const totalViews = allMangas.reduce((sum, manga) => sum + (manga.views || 0), 0);
+
+        const users = await User.find().select('-password').sort({ createdAt: -1 });
+
+        res.json({ success: true, totalUsers, totalMangas, totalViews, users, mangas: allMangas });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Admin magic failed.' });
+    }
+});
+
+// 👑 ✨ NEW: GUILDMASTER BANISH MANGA ✨ 👑
+app.delete('/api/admin/mangas/:id', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ success: false, message: 'No key' });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await User.findById(decoded.userId);
+        if (!user || !user.isAdmin) return res.status(403).json({ success: false, message: 'Not a Guildmaster!' });
+
+        await Manga.findByIdAndDelete(req.params.id);
+        await Chapter.deleteMany({ mangaId: req.params.id });
+
+        res.json({ success: true, message: 'Manga permanently banished by Guildmaster!' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to banish manga.' });
+    }
+});
 
 app.listen(PORT, () => console.log(`✨ Mangakan Server running at http://localhost:${PORT}`));
