@@ -4,78 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unlock the Realm ✨ Mangakan</title>
-    <meta name="description" content="Sign in or create an account to subscribe to your favorite manga on Mangakan.">
     
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-
     <style>
         :root {
             --bg-main: #fcfcfd; --bg-card: #ffffff; --primary: #ff9a9e; 
             --accent: #a18cd1; --text-dark: #2d3142; --text-muted: #8c92a4;
-            --shadow-subtle: 0 12px 30px rgba(161, 140, 209, 0.08);
-            --shadow-hover: 0 20px 40px rgba(255, 154, 158, 0.18);
-            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --transition: all 0.4s ease;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        
         body {
             background-color: var(--bg-main); color: var(--text-dark);
             font-family: 'Nunito', sans-serif; overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
             background-image: radial-gradient(rgba(255, 154, 158, 0.05) 2px, transparent 2px);
             background-size: 30px 30px; display: flex; flex-direction: column; min-height: 100vh;
         }
+        h1, h2, .logo, nav a, .auth-title, .btn-submit, .nav-label { font-family: 'Poppins', sans-serif; }
 
-        h1, h2, h3, .logo, nav a, .auth-title, .btn-submit { font-family: 'Poppins', sans-serif; }
-
-        #mascot {
-            position: fixed; top: -100px; left: -100px; 
-            width: 75px; height: 75px; background: transparent; pointer-events: none; 
-            z-index: 9998; display: flex; justify-content: center; align-items: center;
-            animation: breatheCharacter 2s ease-in-out infinite alternate;
-        }
-        #character-sprite {
-            width: 100%; height: 100%; object-fit: contain;
-            filter: drop-shadow(0 8px 15px rgba(255, 154, 158, 0.3));
-        }
-
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: var(--bg-main); display: flex; justify-content: center; align-items: center; flex-direction: column;
-            z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s;
-        }
-        .magic-orb {
-            width: 70px; height: 70px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--accent)); animation: breatheOrb 2s ease-in-out infinite;
-        }
-        .loader-text { margin-top: 25px; font-weight: 700; font-size: 16px; letter-spacing: 1.5px; color: var(--text-dark); animation: pulseText 2s infinite; }
-
+        /* --- DESKTOP NAVBAR --- */
         header {
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px);
-            padding: 18px 5%; display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid rgba(255, 154, 158, 0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 18px 5%; 
+            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; 
+            z-index: 1000; border-bottom: 2px solid rgba(255, 154, 158, 0.1);
         }
-        .logo { font-size: 28px; font-weight: 800; background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; cursor: pointer; }
-        nav ul { display: flex; list-style: none; gap: 35px; }
-        nav a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 16px; transition: var(--transition); position: relative; }
-        nav a:hover { color: var(--text-dark); }
-        nav a::after { content: '✨'; position: absolute; font-size: 10px; top: -10px; right: -10px; opacity: 0; transition: var(--transition); transform: scale(0); }
-        nav a:hover::after { opacity: 1; transform: scale(1); } 
+        .logo { font-size: 28px; font-weight: 800; background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; }
+        .desktop-nav ul { display: flex; list-style: none; gap: 35px; align-items: center; }
+        .desktop-nav a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 16px; transition: var(--transition); }
+        .desktop-nav a:hover { color: var(--text-dark); }
 
+        /* --- ✨ MOBILE BOTTOM APP BAR ✨ --- */
+        .bottom-nav {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 154, 158, 0.2); z-index: 2000;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+        .bottom-nav-item:hover, .bottom-nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 22px; margin-bottom: 4px; transition: var(--transition); }
+        .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-3px); }
+        .nav-label { font-size: 11px; font-weight: 700; }
+
+        /* --- AUTH CARD --- */
         main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 60px 5%; }
-
-        .auth-card {
-            background: var(--bg-card); border-radius: 32px; padding: 50px 40px; width: 100%; max-width: 480px;
-            box-shadow: 0 20px 50px rgba(161, 140, 209, 0.12); border: 2px solid rgba(255, 154, 158, 0.15);
-            text-align: center; position: relative;
-        }
-
+        .auth-card { background: var(--bg-card); border-radius: 32px; padding: 50px 40px; width: 100%; max-width: 480px; box-shadow: 0 20px 50px rgba(161, 140, 209, 0.12); border: 2px solid rgba(255, 154, 158, 0.15); text-align: center; position: relative; }
         .auth-card::before { content: '🌸'; position: absolute; top: -20px; left: -20px; font-size: 45px; animation: floatHero 4s infinite alternate; filter: drop-shadow(0 5px 10px rgba(255,154,158,0.3)); }
         .auth-card::after { content: '✨'; position: absolute; bottom: -15px; right: -15px; font-size: 35px; animation: floatHero 3s infinite alternate-reverse; filter: drop-shadow(0 5px 10px rgba(161,140,209,0.3)); }
-
         .auth-title { font-size: 32px; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; }
         .auth-title span { background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .auth-subtitle { font-size: 15px; color: var(--text-muted); font-weight: 600; margin-bottom: 30px; }
@@ -86,70 +63,53 @@
 
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; font-size: 14px; padding-left: 5px;}
-        .form-control {
-            width: 100%; padding: 15px 20px; border-radius: 16px; border: 2px solid rgba(161, 140, 209, 0.2); background: var(--bg-main);
-            color: var(--text-dark); font-family: 'Nunito', sans-serif; font-size: 15px; outline: none; transition: var(--transition);
-        }
+        .form-control { width: 100%; padding: 15px 20px; border-radius: 16px; border: 2px solid rgba(161, 140, 209, 0.2); background: var(--bg-main); color: var(--text-dark); font-family: 'Nunito', sans-serif; font-size: 15px; outline: none; transition: var(--transition); }
         .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(255, 154, 158, 0.15); background: #ffffff; }
         
-        #error-msg { color: #ff4d4d; margin-bottom: 15px; font-weight: 700; font-size: 14px; display: none; }
-
-        .forgot-password { display: block; text-align: right; color: var(--accent); font-size: 13px; font-weight: 700; margin-top: -10px; margin-bottom: 25px; text-decoration: none; transition: var(--transition); cursor: pointer;}
+        .forgot-password { display: block; text-align: right; color: var(--accent); font-size: 13px; font-weight: 700; margin-top: -10px; margin-bottom: 25px; text-decoration: none; transition: var(--transition); cursor: pointer; }
         .forgot-password:hover { color: var(--primary); }
 
-        .btn-submit {
-            width: 100%; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 18px; border: none; border-radius: 20px;
-            font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
-            transition: var(--transition); box-shadow: 0 10px 20px rgba(161, 140, 209, 0.2); cursor: pointer;
-        }
+        .btn-submit { width: 100%; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 18px; border: none; border-radius: 20px; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: var(--transition); box-shadow: 0 10px 20px rgba(161, 140, 209, 0.2); cursor: pointer; margin-top: 15px; }
         .btn-submit:hover { transform: translateY(-4px); box-shadow: 0 15px 30px rgba(255, 154, 158, 0.4); }
 
         .auth-footer { margin-top: 25px; font-size: 15px; color: var(--text-muted); font-weight: 600; }
         .auth-footer a { color: var(--primary); font-weight: 800; text-decoration: none; transition: var(--transition); }
         .auth-footer a:hover { color: var(--accent); }
 
-        footer { background: #ffffff; padding: 30px 5%; text-align: center; border-top: 1px solid rgba(0,0,0,0.03); color: var(--text-muted); font-weight: 600; font-size: 14px; margin-top: auto; }
-        footer a { color: var(--accent); text-decoration: none; margin: 0 12px; transition: var(--transition); }
-
-        /* --- MODAL STYLES --- */
+        /* MODAL STYLES */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-box { background: var(--bg-card); padding: 40px; border-radius: 24px; text-align: center; width: 90%; max-width: 400px; border: 2px solid var(--primary); }
         .modal-box h2 { font-family: 'Poppins'; margin-bottom: 10px; color: var(--text-dark); }
         .modal-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; }
         .otp-input { width: 100%; padding: 15px; text-align: center; font-size: 24px; letter-spacing: 5px; border-radius: 12px; border: 2px solid rgba(161, 140, 209, 0.3); margin-bottom: 20px; outline: none; font-family: 'Nunito'; font-weight: 800; color: var(--primary); }
 
-        @keyframes breatheCharacter { 0% { transform: scale(1); } 100% { transform: scale(1.04) translateY(-2px); } }
-        @keyframes breatheOrb { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 154, 158, 0.4); } 50% { transform: scale(1.15); box-shadow: 0 0 40px rgba(161, 140, 209, 0.6); } }
-        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        footer { background: #ffffff; padding: 30px 5%; text-align: center; border-top: 1px solid rgba(0,0,0,0.03); color: var(--text-muted); font-weight: 600; font-size: 14px; margin-top: auto; }
+        
         @keyframes floatHero { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px) rotate(5deg); } }
 
         @media (max-width: 850px) {
-            header { flex-direction: column; padding: 15px 5%; gap: 12px; }
-            nav { width: 100%; }
-            nav ul { flex-wrap: wrap; justify-content: center; gap: 10px 20px; }
-            #mascot { display: none; }
+            body { padding-bottom: 80px; }
+            header .desktop-nav { display: none; }
+            header { justify-content: center; padding: 15px 5%; border-bottom: none; background: rgba(252, 252, 253, 0.9); box-shadow: none;}
+            .bottom-nav { display: flex; }
+            .auth-card { padding: 40px 25px; border-radius: 24px; }
             .auth-card::before, .auth-card::after { display: none; }
+            footer { padding-bottom: 20px; border-bottom: none; }
         }
     </style>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#ff9a9e">
+    <meta name="theme-color" content="#fcfcfd">
     <link rel="apple-touch-icon" href="favicon.png">
 </head>
 <body>
 
-    <div id="mascot"><img id="character-sprite" src="pochi-idle.gif" alt="Mascot"></div>
-
-    <div id="loader">
-        <div class="magic-orb"></div>
-        <div class="loader-text">Opening the Gates...</div>
-    </div>
-
     <header>
         <div class="logo" onclick="window.location.href='index.html'">Mangakan</div>
-        <nav>
+        <nav class="desktop-nav">
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="discover.html">Discover</a></li>
+                <li><a href="creator.html">Contact</a></li>
                 <li><a href="signup.html" style="color: var(--primary); font-weight: 800;">Sign Up</a></li>
             </ul>
         </nav>
@@ -160,7 +120,7 @@
             <h1 class="auth-title">Welcome <span>Back!</span></h1>
             <p class="auth-subtitle">Sign in to subscribe and save your favorite stories.</p>
             
-            <div id="error-msg"></div>
+            <div id="error-msg" style="color: #ff4d4d; margin-bottom: 15px; font-weight: 700; font-size: 14px; display: none;"></div>
 
             <div id="g_id_onload"
                  data-client_id="202906892112-h7nshr5rk1h664h8iikl3brt6o2v9uk5.apps.googleusercontent.com"
@@ -168,15 +128,7 @@
                  data-auto_prompt="false">
             </div>
             <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 25px;">
-                <div class="g_id_signin" 
-                     data-type="standard" 
-                     data-size="large"
-                     data-width="360" 
-                     data-theme="outline" 
-                     data-text="continue_with" 
-                     data-shape="pill" 
-                     data-logo_alignment="center">
-                </div>
+                <div class="g_id_signin" data-type="standard" data-size="large" data-width="360" data-theme="outline" data-text="continue_with" data-shape="pill" data-logo_alignment="center"></div>
             </div>
 
             <div class="divider"><span>OR CONTINUE WITH EMAIL</span></div>
@@ -205,8 +157,26 @@
 
     <footer>
         <p>&copy; 2026 Mangakan. Crafted with care by Karash.</p>
-        <p style="margin-top: 15px;"><a href="privacy.html">Privacy</a> • <a href="terms.html">Terms</a> • <a href="creator.html">Contact</a></p>
     </footer>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="discover.html" class="bottom-nav-item">
+            <span class="nav-icon">🔍</span>
+            <span class="nav-label">Discover</span>
+        </a>
+        <a href="creator.html" class="bottom-nav-item">
+            <span class="nav-icon">💌</span>
+            <span class="nav-label">Contact</span>
+        </a>
+        <a href="login.html" class="bottom-nav-item active" id="bottomAuthBtn">
+            <span class="nav-icon">✨</span>
+            <span class="nav-label">Sign In</span>
+        </a>
+    </nav>
 
     <div id="forgotEmailModal" class="modal-overlay">
         <div class="modal-box">
@@ -231,10 +201,8 @@
 
     <script>
         window.addEventListener('load', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('loader');
-                if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
-            }, 800); 
+            const token = localStorage.getItem('mangakan_token');
+            if (token) { window.location.href = 'index.html'; } // Hide login page if already logged in!
         });
 
         async function handleGoogleResponse(response) {
@@ -244,26 +212,11 @@
             btn.innerText = '⏳ Verifying Google Magic...';
 
             try {
-                const res = await fetch('/api/google-auth', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token })
-                });
-                
+                const res = await fetch('/api/google-auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) });
                 const data = await res.json();
-                if (data.success) {
-                    localStorage.setItem('mangakan_token', data.token);
-                    window.location.href = 'index.html'; 
-                } else {
-                    errorMsg.innerText = data.message;
-                    errorMsg.style.display = 'block';
-                    btn.innerText = '✨ Sign In';
-                }
-            } catch (err) {
-                errorMsg.innerText = 'Connection to the vault failed.';
-                errorMsg.style.display = 'block';
-                btn.innerText = '✨ Sign In';
-            }
+                if (data.success) { localStorage.setItem('mangakan_token', data.token); window.location.href = 'index.html'; } 
+                else { errorMsg.innerText = data.message; errorMsg.style.display = 'block'; btn.innerText = '✨ Sign In'; }
+            } catch (err) { errorMsg.innerText = 'Connection to the vault failed.'; errorMsg.style.display = 'block'; btn.innerText = '✨ Sign In'; }
         }
 
         async function simulateLogin() {
@@ -276,103 +229,42 @@
             errorMsg.style.display = 'none';
 
             try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
+                const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
                 const data = await response.json();
-
-                if (data.success) {
-                    localStorage.setItem('mangakan_token', data.token);
-                    btn.innerHTML = '✨ Success! Redirecting...';
-                    setTimeout(() => { window.location.href = 'index.html'; }, 1000);
-                } else {
-                    errorMsg.innerText = data.message;
-                    errorMsg.style.display = 'block';
-                    btn.innerHTML = '✨ Sign In';
-                }
-            } catch (err) {
-                errorMsg.innerText = 'Server is sleeping! Try again later.';
-                errorMsg.style.display = 'block';
-                btn.innerHTML = '✨ Sign In';
-            }
+                if (data.success) { localStorage.setItem('mangakan_token', data.token); btn.innerHTML = '✨ Success!'; setTimeout(() => { window.location.href = 'index.html'; }, 1000); } 
+                else { errorMsg.innerText = data.message; errorMsg.style.display = 'block'; btn.innerHTML = '✨ Sign In'; }
+            } catch (err) { errorMsg.innerText = 'Server is sleeping! Try again later.'; errorMsg.style.display = 'block'; btn.innerHTML = '✨ Sign In'; }
         }
 
-        // ✨ FORGOT PASSWORD MAGIC - STEP 1 ✨
         let resetEmailSaved = '';
         async function sendResetOTP() {
             const email = document.getElementById('resetEmailInput').value.trim();
             const btn = document.getElementById('btnSendReset');
             if(!email) return alert("Please enter your email!");
-
             btn.innerHTML = '⏳ Sending...';
-
             try {
-                const response = await fetch('/api/forgot-password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
-                });
-
+                const response = await fetch('/api/forgot-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
                 const data = await response.json();
-                if (data.success) {
-                    resetEmailSaved = email; // Save it for step 2
-                    document.getElementById('forgotEmailModal').style.display = 'none';
-                    document.getElementById('resetPasswordModal').style.display = 'flex';
-                } else {
-                    alert("❌ " + data.message);
-                }
-            } catch (err) {
-                alert('Connection failed.');
-            }
+                if (data.success) { resetEmailSaved = email; document.getElementById('forgotEmailModal').style.display = 'none'; document.getElementById('resetPasswordModal').style.display = 'flex'; } 
+                else { alert("❌ " + data.message); }
+            } catch (err) { alert('Connection failed.'); }
             btn.innerHTML = 'Send Code';
         }
 
-        // ✨ FORGOT PASSWORD MAGIC - STEP 2 ✨
         async function verifyResetOTP() {
             const otp = document.getElementById('resetOtpInput').value.trim();
             const newPassword = document.getElementById('newPasswordInput').value;
             const btn = document.getElementById('btnVerifyReset');
-
             if(!otp || !newPassword) return alert("Please fill in both fields!");
-
             btn.innerHTML = '⏳ Updating...';
-
             try {
-                const response = await fetch('/api/reset-password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: resetEmailSaved, otp, newPassword })
-                });
-
+                const response = await fetch('/api/reset-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: resetEmailSaved, otp, newPassword }) });
                 const data = await response.json();
-                if (data.success) {
-                    alert("✨ Password successfully updated! You can now log in.");
-                    document.getElementById('resetPasswordModal').style.display = 'none';
-                    document.getElementById('userPassword').value = ''; 
-                } else {
-                    alert("❌ " + data.message);
-                }
-            } catch (err) {
-                alert('Connection failed.');
-            }
+                if (data.success) { alert("✨ Password successfully updated! You can now log in."); document.getElementById('resetPasswordModal').style.display = 'none'; document.getElementById('userPassword').value = ''; } 
+                else { alert("❌ " + data.message); }
+            } catch (err) { alert('Connection failed.'); }
             btn.innerHTML = 'Update Password';
         }
-           
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('✨ ServiceWorker registered successfully!');
-                    })
-                    .catch(err => {
-                        console.log('❌ ServiceWorker registration failed: ', err);
-                    });
-            });
-        }
-    
     </script>
 </body>
 </html>

@@ -6,7 +6,6 @@
     <title>Join ✨ Mangakan</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
@@ -29,7 +28,7 @@
             background-size: 30px 30px; display: flex; flex-direction: column; min-height: 100vh;
         }
 
-        h1, h2, h3, .logo, nav a, .auth-title, .btn-submit { font-family: 'Poppins', sans-serif; }
+        h1, h2, h3, .logo, nav a, .auth-title, .btn-submit, .nav-label { font-family: 'Poppins', sans-serif; }
 
         /* --- THE ANIMATING MASCOT --- */
         #mascot {
@@ -38,10 +37,7 @@
             z-index: 9998; display: flex; justify-content: center; align-items: center;
             animation: breatheCharacter 2s ease-in-out infinite alternate;
         }
-        #character-sprite {
-            width: 100%; height: 100%; object-fit: contain;
-            filter: drop-shadow(0 8px 15px rgba(255, 154, 158, 0.3));
-        }
+        #character-sprite { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 15px rgba(255, 154, 158, 0.3)); }
 
         /* --- LOADING SCREEN --- */
         #loader {
@@ -49,24 +45,34 @@
             background: var(--bg-main); display: flex; justify-content: center; align-items: center; flex-direction: column;
             z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s;
         }
-        .magic-orb {
-            width: 70px; height: 70px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--accent)); animation: breatheOrb 2s ease-in-out infinite;
-        }
+        .magic-orb { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); animation: breatheOrb 2s ease-in-out infinite; }
         .loader-text { margin-top: 25px; font-weight: 700; font-size: 16px; letter-spacing: 1.5px; color: var(--text-dark); animation: pulseText 2s infinite; }
 
-        /* --- NAVBAR --- */
+        /* --- DESKTOP NAVBAR --- */
         header {
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px);
             padding: 18px 5%; display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid rgba(255, 154, 158, 0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
         .logo { font-size: 28px; font-weight: 800; background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; cursor: pointer; }
-        nav ul { display: flex; list-style: none; gap: 35px; }
-        nav a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 16px; transition: var(--transition); position: relative; }
-        nav a:hover { color: var(--text-dark); }
-        nav a::after { content: '✨'; position: absolute; font-size: 10px; top: -10px; right: -10px; opacity: 0; transition: var(--transition); transform: scale(0); }
-        nav a:hover::after { opacity: 1; transform: scale(1); } 
+        .desktop-nav ul { display: flex; list-style: none; gap: 35px; align-items: center;}
+        .desktop-nav a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 16px; transition: var(--transition); position: relative; }
+        .desktop-nav a:hover { color: var(--text-dark); }
+        .nav-auth-btn { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white !important; padding: 10px 24px; border-radius: 20px; font-weight: 700 !important; box-shadow: 0 5px 15px rgba(255, 154, 158, 0.3); transition: var(--transition); }
+        .nav-auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(161, 140, 209, 0.4); color: white !important; }
+
+        /* --- ✨ MOBILE BOTTOM APP BAR ✨ --- */
+        .bottom-nav {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 154, 158, 0.2); z-index: 2000;
+            padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -5px 20px rgba(161, 140, 209, 0.08);
+        }
+        .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+        .bottom-nav-item:hover, .bottom-nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 22px; margin-bottom: 4px; transition: var(--transition); }
+        .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-3px); }
+        .nav-label { font-size: 11px; font-weight: 700; }
 
         /* --- ✨ AUTHENTICATION CARD ✨ --- */
         main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 60px 5%; }
@@ -84,12 +90,10 @@
         .auth-title span { background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .auth-subtitle { font-size: 15px; color: var(--text-muted); font-weight: 600; margin-bottom: 30px; }
 
-        /* OR Divider */
         .divider { display: flex; align-items: center; text-align: center; margin-bottom: 25px; margin-top: 10px;}
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 2px dashed rgba(161, 140, 209, 0.2); }
         .divider span { padding: 0 15px; color: var(--text-muted); font-weight: 800; font-size: 13px; letter-spacing: 1px; }
 
-        /* Form Inputs */
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; font-size: 14px; padding-left: 5px;}
         .form-control {
@@ -120,34 +124,34 @@
         @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         @keyframes floatHero { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px) rotate(5deg); } }
 
+        /* --- ✨ MOBILE APP ALIGNMENT ✨ --- */
         @media (max-width: 850px) {
-            header { flex-direction: column; padding: 15px 5%; gap: 12px; }
-            nav { width: 100%; }
-            nav ul { flex-wrap: wrap; justify-content: center; gap: 10px 20px; }
+            body { padding-bottom: 80px; }
+            header .desktop-nav { display: none; }
+            header { justify-content: center; padding: 15px 5%; border-bottom: none; background: rgba(252, 252, 253, 0.9); box-shadow: none;}
+            .bottom-nav { display: flex; }
             #mascot { display: none; }
+            .auth-card { padding: 40px 25px; border-radius: 24px; }
             .auth-card::before, .auth-card::after { display: none; }
+            footer { padding-bottom: 20px; border-bottom: none; }
         }
     </style>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#ff9a9e">
+    <meta name="theme-color" content="#fcfcfd">
     <link rel="apple-touch-icon" href="favicon.png">
 </head>
 <body>
 
-    <div id="mascot"><img id="character-sprite" src="pochi-idle.gif" alt="Mascot"></div>
-
-    <div id="loader">
-        <div class="magic-orb"></div>
-        <div class="loader-text">Opening the Gates...</div>
-    </div>
+   
 
     <header>
         <div class="logo" onclick="window.location.href='index.html'">Mangakan</div>
-        <nav>
+        <nav class="desktop-nav">
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="discover.html">Discover</a></li>
-                <li><a href="login.html" style="color: var(--primary); font-weight: 800;">Sign In</a></li>
+                <li><a href="creator.html">Contact</a></li>
+                <li><a href="login.html" class="nav-auth-btn" id="navBtn">✨ Sign In</a></li>
             </ul>
         </nav>
     </header>
@@ -208,6 +212,25 @@
         <p style="margin-top: 15px;"><a href="privacy.html">Privacy</a> • <a href="terms.html">Terms</a> • <a href="creator.html">Contact</a></p>
     </footer>
 
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="discover.html" class="bottom-nav-item">
+            <span class="nav-icon">🔍</span>
+            <span class="nav-label">Discover</span>
+        </a>
+        <a href="creator.html" class="bottom-nav-item">
+            <span class="nav-icon">💌</span>
+            <span class="nav-label">Contact</span>
+        </a>
+        <a href="login.html" class="bottom-nav-item active" id="bottomAuthBtn">
+            <span class="nav-icon">✨</span>
+            <span class="nav-label">Sign In</span>
+        </a>
+    </nav>
+
     <div id="otpModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
         <div style="background: var(--bg-card); padding: 40px; border-radius: 24px; text-align: center; width: 90%; max-width: 400px; border: 2px solid var(--primary);">
             <h2 style="font-family: 'Poppins'; margin-bottom: 10px; color: var(--text-dark);">Enter Magical Code</h2>
@@ -225,6 +248,24 @@
                 const loader = document.getElementById('loader');
                 if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
             }, 800); 
+            
+            // Auth Checker
+            const token = localStorage.getItem('mangakan_token');
+            if (token) {
+                // Desktop
+                document.getElementById('navBtn').innerHTML = '🔮 My Profile';
+                document.getElementById('navBtn').href = 'profile.html';
+                
+                // Mobile
+                const bottomAuth = document.getElementById('bottomAuthBtn');
+                if(bottomAuth) {
+                    bottomAuth.href = 'profile.html';
+                    bottomAuth.innerHTML = '<span class="nav-icon">🔮</span><span class="nav-label">Profile</span>';
+                }
+                
+                // Optional: redirect to index immediately if they shouldn't be on signup page
+                window.location.href = 'index.html';
+            }
         });
 
         // ✨ GOOGLE SIGNUP MAGIC ✨
@@ -336,7 +377,6 @@
                     });
             });
         }
-    
     </script>
 </body>
 </html>

@@ -9,12 +9,8 @@
     <style>
         /* --- PREMIUM & CUTE CSS VARIABLES --- */
         :root { 
-            --bg-main: #fcfcfd; 
-            --bg-card: #ffffff; 
-            --primary: #ff9a9e; 
-            --accent: #a18cd1; 
-            --text-dark: #2d3142; 
-            --text-muted: #8c92a4; 
+            --bg-main: #fcfcfd; --bg-card: #ffffff; --primary: #ff9a9e; 
+            --accent: #a18cd1; --text-dark: #2d3142; --text-muted: #8c92a4; 
             --shadow-subtle: 0 12px 30px rgba(161, 140, 209, 0.08); 
             --shadow-hover: 0 20px 40px rgba(255, 154, 158, 0.18);
             --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
@@ -34,9 +30,9 @@
             background-size: 30px 30px; 
             overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column;
         }
-        h1, h2, h3, .logo, nav a { font-family: 'Poppins', sans-serif; }
+        h1, h2, h3, .logo, nav a, .nav-label { font-family: 'Poppins', sans-serif; }
 
-        /* --- NAVBAR --- */
+        /* --- DESKTOP NAVBAR --- */
         header { 
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); 
             padding: 18px 5%; display: flex; justify-content: space-between; align-items: center; 
@@ -44,11 +40,26 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.02); 
         }
         .logo { font-size: 28px; font-weight: 800; background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; letter-spacing: -0.5px;}
-        nav ul { display: flex; list-style: none; gap: 35px; align-items: center; }
-        nav a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 16px; transition: var(--transition); position: relative;}
-        nav a:hover { color: var(--text-dark); }
-        .nav-login { background: rgba(255, 154, 158, 0.15); padding: 8px 20px; border-radius: 20px; color: var(--primary) !important; font-weight: 800 !important; }
-        .nav-login:hover { background: var(--primary); color: white !important; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3); }
+        .desktop-nav ul { display: flex; list-style: none; gap: 35px; align-items: center; }
+        .desktop-nav a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 16px; transition: var(--transition); position: relative;}
+        .desktop-nav a:hover { color: var(--text-dark); }
+        
+        .nav-auth-btn { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white !important; padding: 10px 24px; border-radius: 20px; font-weight: 700 !important; box-shadow: 0 5px 15px rgba(255, 154, 158, 0.3); transition: var(--transition); }
+        .nav-auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(161, 140, 209, 0.4); color: white !important; }
+
+        /* --- ✨ MOBILE BOTTOM APP BAR ✨ --- */
+        .bottom-nav {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 154, 158, 0.2); z-index: 2000;
+            padding-bottom: env(safe-area-inset-bottom);
+            box-shadow: 0 -5px 20px rgba(161, 140, 209, 0.08);
+        }
+        .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+        .bottom-nav-item:hover, .bottom-nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 22px; margin-bottom: 4px; transition: var(--transition); }
+        .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-3px); }
+        .nav-label { font-size: 11px; font-weight: 700; }
 
         /* --- SEARCH HUB --- */
         main { padding: 60px 5%; max-width: 1200px; margin: 0 auto; flex: 1; width: 100%;}
@@ -96,28 +107,33 @@
         footer a { color: var(--accent); text-decoration: none; margin: 0 12px; transition: var(--transition); }
         footer a:hover { color: var(--primary); }
 
+        /* --- ✨ MOBILE APP ALIGNMENT ✨ --- */
         @media (max-width: 850px) {
-            header { flex-direction: column; padding: 15px 5%; gap: 12px; }
-            nav ul { flex-wrap: wrap; justify-content: center; gap: 10px 20px; }
+            body { padding-bottom: 80px; } 
+            header .desktop-nav { display: none; }
+            header { justify-content: center; padding: 15px 5%; border-bottom: none; background: rgba(252, 252, 253, 0.9); box-shadow: none;}
+            .bottom-nav { display: flex; }
+            main { padding: 30px 5%; }
             .search-title { font-size: 32px; }
             .manga-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;}
             .manga-card img { height: 220px; }
+            footer { padding-bottom: 20px; border-bottom: none; }
         }
     </style>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#ff9a9e">
+    <meta name="theme-color" content="#fcfcfd">
     <link rel="apple-touch-icon" href="favicon.png">
 </head>
 <body>
 
     <header>
         <div class="logo" onclick="window.location.href='index.html'">Mangakan</div>
-        <nav>
+        <nav class="desktop-nav">
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="discover.html" style="color: var(--primary); font-weight: 800;">✨ Discover</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="login.html" class="nav-login" id="navBtn">✨ Sign In</a></li>
+                <li><a href="creator.html">Contact</a></li>
+                <li id="authNavArea"><a href="login.html" class="nav-auth-btn">✨ Sign In</a></li>
             </ul>
         </nav>
     </header>
@@ -144,14 +160,32 @@
 
         <div class="results-info" id="resultsText">Summoning all scrolls...</div>
         
-        <div class="manga-grid" id="searchGrid">
-            </div>
+        <div class="manga-grid" id="searchGrid"></div>
     </main>
 
     <footer>
         <p>&copy; 2026 Mangakan. Crafted with care by Karash.</p>
-        <p style="margin-top: 15px;"><a href="privacy.html">Privacy</a> • <a href="terms.html">Terms</a> • <a href="contact.html">Contact</a></p>
+        <p style="margin-top: 15px;"><a href="privacy.html">Privacy</a> • <a href="terms.html">Terms</a> • <a href="creator.html">Contact</a></p>
     </footer>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="discover.html" class="bottom-nav-item active">
+            <span class="nav-icon">🔍</span>
+            <span class="nav-label">Discover</span>
+        </a>
+        <a href="creator.html" class="bottom-nav-item">
+            <span class="nav-icon">💌</span>
+            <span class="nav-label">Contact</span>
+        </a>
+        <a href="login.html" class="bottom-nav-item" id="bottomAuthBtn">
+            <span class="nav-icon">✨</span>
+            <span class="nav-label">Sign In</span>
+        </a>
+    </nav>
 
     <script>
         let currentSearchQuery = '';
@@ -159,32 +193,29 @@
         let searchTimeout = null;
 
         window.addEventListener('load', () => {
-            // Setup Navbar
             const token = localStorage.getItem('mangakan_token');
             if (token) {
-                document.getElementById('navBtn').innerHTML = '✨ My Profile';
-                document.getElementById('navBtn').href = 'profile.html';
+                // Desktop
+                document.getElementById('authNavArea').innerHTML = '<a href="profile.html" class="nav-auth-btn" style="background: var(--text-dark);">🔮 My Profile</a>';
+                
+                // Mobile
+                const bottomAuth = document.getElementById('bottomAuthBtn');
+                if(bottomAuth) {
+                    bottomAuth.href = 'profile.html';
+                    bottomAuth.innerHTML = '<span class="nav-icon">🔮</span><span class="nav-label">Profile</span>';
+                }
             }
-            // Fetch initial library
             performSearch();
         });
 
-        // Detect typing in the search bar
         function triggerSearch() {
             currentSearchQuery = document.getElementById('searchInput').value;
-            
-            // Add a tiny delay so we don't spam the server on every single keystroke
             clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                performSearch();
-            }, 300);
+            searchTimeout = setTimeout(() => { performSearch(); }, 300);
         }
 
-        // Detect clicking a genre button
         function setGenre(genreName) {
             currentGenre = genreName;
-            
-            // Update UI to highlight the active button
             const buttons = document.querySelectorAll('.filter-btn');
             buttons.forEach(btn => {
                 if(btn.innerText === genreName || (genreName === 'All' && btn.innerText === 'All Magic')) {
@@ -193,19 +224,15 @@
                     btn.classList.remove('active');
                 }
             });
-
             performSearch();
         }
 
-        // The actual Search Spell
         async function performSearch() {
             const grid = document.getElementById('searchGrid');
             const resultsText = document.getElementById('resultsText');
             
             try {
-                // Build the URL with our search queries
                 const url = `/api/search?q=${encodeURIComponent(currentSearchQuery)}&genre=${encodeURIComponent(currentGenre)}`;
-                
                 const response = await fetch(url);
                 const data = await response.json();
 
@@ -221,9 +248,7 @@
                     resultsText.innerText = `Found ${data.mangas.length} scroll${data.mangas.length > 1 ? 's' : ''}`;
 
                     data.mangas.forEach(manga => {
-                        // Just show the first genre tag to keep it cute
                         const firstTag = manga.genres && manga.genres.length > 0 ? manga.genres[0] : 'Magic';
-
                         grid.innerHTML += `
                             <div class="manga-card" onclick="window.location.href='manga.html?id=${manga._id}'">
                                 <div class="card-img-wrapper">
@@ -244,17 +269,8 @@
         }
            
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('✨ ServiceWorker registered successfully!');
-                    })
-                    .catch(err => {
-                        console.log('❌ ServiceWorker registration failed: ', err);
-                    });
-            });
+            window.addEventListener('load', () => { navigator.serviceWorker.register('/service-worker.js').catch(err => {}); });
         }
-    
     </script>
 </body>
 </html>

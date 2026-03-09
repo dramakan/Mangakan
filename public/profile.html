@@ -25,21 +25,38 @@
         body { 
             background-color: var(--bg-main); color: var(--text-dark); font-family: 'Nunito', sans-serif; 
             background-image: radial-gradient(rgba(255, 154, 158, 0.08) 2px, transparent 2px); 
-            background-size: 30px 30px; overflow-x: hidden;
+            background-size: 30px 30px; overflow-x: hidden; min-height: 100vh;
         }
-        h1, h2, h3, .logo, nav a { font-family: 'Poppins', sans-serif; }
+        h1, h2, h3, .logo, nav a, .nav-label { font-family: 'Poppins', sans-serif; }
 
+        /* --- DESKTOP NAVBAR --- */
         header { 
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 18px 5%; 
             display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; 
             border-bottom: 2px solid rgba(255, 154, 158, 0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.02); 
         }
         .logo { font-size: 28px; font-weight: 800; background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; letter-spacing: -0.5px;}
-        nav ul { display: flex; list-style: none; gap: 35px; align-items: center; }
-        nav a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 16px; transition: var(--transition); position: relative;}
-        nav a:hover { color: var(--text-dark); }
+        .desktop-nav ul { display: flex; list-style: none; gap: 35px; align-items: center; }
+        .desktop-nav a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 16px; transition: var(--transition); position: relative;}
+        .desktop-nav a:hover { color: var(--text-dark); }
+        .nav-auth-btn { background: var(--text-dark) !important; color: white !important; padding: 10px 24px; border-radius: 20px; font-weight: 700 !important; box-shadow: 0 5px 15px rgba(45, 49, 66, 0.2); transition: var(--transition); }
+        .nav-auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(45, 49, 66, 0.3); }
 
-        main { padding: 60px 5%; max-width: 1000px; margin: 0 auto; }
+        /* --- ✨ MOBILE BOTTOM APP BAR ✨ --- */
+        .bottom-nav {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 154, 158, 0.2); z-index: 2000;
+            padding-bottom: env(safe-area-inset-bottom);
+            box-shadow: 0 -5px 20px rgba(161, 140, 209, 0.08);
+        }
+        .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+        .bottom-nav-item:hover, .bottom-nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 22px; margin-bottom: 4px; transition: var(--transition); }
+        .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-3px); }
+        .nav-label { font-size: 11px; font-weight: 700; }
+
+        main { padding: 60px 5%; max-width: 1000px; margin: 0 auto; flex: 1;}
         
         .profile-header { 
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 240, 245, 0.7)); 
@@ -63,16 +80,19 @@
         .admin-badge { background: linear-gradient(45deg, #ffd700, #ffaa00); color: #fff; font-weight: 800; font-size: 12px; padding: 5px 15px; border-radius: 20px; display: inline-block; margin-bottom: 12px; margin-top: -2px; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .profile-bio { font-size: 16px; color: var(--text-dark); font-weight: 600; max-width: 550px; margin: 15px auto 30px auto; line-height: 1.7; position: relative; z-index: 2;}
         
-        /* ✨ CREATOR DASHBOARD STATS ✨ */
         .creator-stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; position: relative; z-index: 2; }
         .stat-box { background: rgba(255, 255, 255, 0.7); padding: 15px 30px; border-radius: 24px; box-shadow: 0 10px 25px rgba(161, 140, 209, 0.1); border: 2px solid #fff; backdrop-filter: blur(10px); transition: var(--transition);}
         .stat-box:hover { transform: translateY(-3px); border-color: var(--primary); }
         .stat-number { font-size: 28px; font-weight: 800; color: var(--primary); font-family: 'Poppins'; line-height: 1;}
         .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;}
 
-        .profile-actions { display: flex; justify-content: center; gap: 15px; position: relative; z-index: 2;}
+        .profile-actions { display: flex; justify-content: center; gap: 15px; position: relative; z-index: 2; flex-wrap: wrap;}
         .btn-edit { background: rgba(161, 140, 209, 0.1); color: var(--accent); padding: 12px 30px; border-radius: 25px; font-weight: 800; border: none; cursor: pointer; transition: var(--transition); font-size: 15px; box-shadow: 0 5px 15px rgba(161, 140, 209, 0.1);}
         .btn-edit:hover { background: var(--accent); color: white; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(161, 140, 209, 0.3);}
+        
+        .btn-summon { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 12px 30px; border-radius: 25px; font-weight: 800; border: none; cursor: pointer; transition: var(--transition); font-size: 15px; box-shadow: 0 5px 15px rgba(255, 154, 158, 0.3);}
+        .btn-summon:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(161, 140, 209, 0.4);}
+
         .btn-logout { background: #ffe3e3; color: #ff4d4d; padding: 12px 30px; border-radius: 25px; font-weight: 800; border: none; cursor: pointer; transition: var(--transition); font-size: 15px; box-shadow: 0 5px 15px rgba(255, 77, 77, 0.1);}
         .btn-logout:hover { background: #ff4d4d; color: white; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255, 77, 77, 0.3);}
 
@@ -89,15 +109,14 @@
         .manga-info { padding: 15px; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .manga-title { font-size: 16px; font-weight: 800; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-dark); }
         
-        /* ✨ INDIVIDUAL CARD STATS ✨ */
         .card-stats { display: flex; justify-content: center; gap: 15px; margin-bottom: 12px; font-size: 13px; font-weight: 800; color: var(--accent); background: rgba(161, 140, 209, 0.05); padding: 6px; border-radius: 12px;}
 
         .btn-delete { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 2px solid transparent; padding: 10px 12px; border-radius: 14px; font-weight: 800; cursor: pointer; width: 100%; transition: var(--transition); font-family: 'Nunito'; font-size: 13px;}
         .btn-delete:hover { background: #ff4d4d; color: white; border-color: #ff4d4d; transform: scale(1.02); }
 
-        /* EDIT PROFILE MODAL */
+        /* MODALS */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(20, 20, 35, 0.6); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; transition: opacity 0.4s ease; }
-        .modal-content { background: var(--bg-card); padding: 40px; border-radius: 35px; width: 95%; max-width: 500px; box-shadow: 0 25px 60px rgba(0,0,0,0.2); transform: scale(0.9) translateY(30px); transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); border: 2px solid rgba(255,154,158,0.2);}
+        .modal-content { background: var(--bg-card); padding: 40px; border-radius: 35px; width: 95%; max-width: 500px; box-shadow: 0 25px 60px rgba(0,0,0,0.2); transform: scale(0.9) translateY(30px); transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); border: 2px solid rgba(255,154,158,0.2); max-height: 90vh; overflow-y: auto;}
         .modal-overlay.active { display: flex; opacity: 1; }
         .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
         .form-group { margin-bottom: 22px; text-align: left; }
@@ -109,25 +128,32 @@
 
         @keyframes floatHero { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(5deg); } }
 
+        /* --- ✨ MOBILE APP ALIGNMENT ✨ --- */
         @media (max-width: 850px) {
+            body { padding-bottom: 80px; }
+            header .desktop-nav { display: none; }
+            header { justify-content: center; padding: 15px 5%; border-bottom: none; background: rgba(252, 252, 253, 0.9); box-shadow: none;}
+            .bottom-nav { display: flex; }
+            
             .profile-header { padding: 40px 20px; border-radius: 30px; }
             .profile-header::before, .profile-header::after { display: none; }
             .manga-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
         }
     </style>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#ff9a9e">
+    <meta name="theme-color" content="#fcfcfd">
     <link rel="apple-touch-icon" href="favicon.png">
 </head>
 <body>
 
     <header>
         <div class="logo" onclick="window.location.href='index.html'">Mangakan</div>
-        <nav>
+        <nav class="desktop-nav">
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="discover.html">Discover</a></li>
-                <li><a href="profile.html" style="color: var(--primary); font-weight: 800;">✨ My Realm</a></li>
+                <li><a href="creator.html">Contact</a></li>
+                <li><a href="profile.html" class="nav-auth-btn">🔮 My Profile</a></li>
             </ul>
         </nav>
     </header>
@@ -158,6 +184,7 @@
 
             <div class="profile-actions">
                 <button class="btn-edit" onclick="openEditModal()">✏️ Edit Profile</button>
+                <button class="btn-summon" onclick="openSummonModal()">✨ Summon Manga</button>
                 <button class="btn-logout" onclick="logout()">🚪 Log Out</button>
             </div>
         </div>
@@ -172,6 +199,25 @@
             <div class="empty-state">Summoning your library...</div>
         </div>
     </main>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </a>
+        <a href="discover.html" class="bottom-nav-item">
+            <span class="nav-icon">🔍</span>
+            <span class="nav-label">Discover</span>
+        </a>
+        <a href="creator.html" class="bottom-nav-item">
+            <span class="nav-icon">💌</span>
+            <span class="nav-label">Contact</span>
+        </a>
+        <a href="profile.html" class="bottom-nav-item active">
+            <span class="nav-icon">🔮</span>
+            <span class="nav-label">Profile</span>
+        </a>
+    </nav>
 
     <div class="modal-overlay" id="editModal">
         <div class="modal-content">
@@ -201,6 +247,39 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="summonModal">
+        <div class="modal-content">
+            <h2 style="font-weight: 800; color: var(--text-dark); margin-bottom: 25px; font-family: 'Poppins';">✨ Summon New Manga</h2>
+            
+            <form id="summonMangaForm" onsubmit="event.preventDefault(); submitNewManga();">
+                <div class="form-group">
+                    <label>📖 Title</label>
+                    <input type="text" id="mangaTitle" class="form-control" placeholder="e.g. The Magic Knight" required>
+                </div>
+
+                <div class="form-group">
+                    <label>📝 Description</label>
+                    <textarea id="mangaDesc" class="form-control" rows="3" placeholder="What is this story about?" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>🏷️ Genres (comma separated)</label>
+                    <input type="text" id="mangaGenres" class="form-control" placeholder="Action, Fantasy, Romance">
+                </div>
+
+                <div class="form-group">
+                    <label>🖼️ Cover Art</label>
+                    <input type="file" id="mangaCover" class="form-control" accept="image/*" required style="padding: 10px;">
+                </div>
+
+                <div id="summon-status" style="margin-bottom: 15px; font-weight: 800; color: var(--primary); display: none; text-align: center;"></div>
+
+                <button type="submit" class="btn-save" id="btnSummonManga">✨ Summon</button>
+                <button type="button" style="width: 100%; background: none; border: none; margin-top: 15px; color: var(--text-muted); cursor: pointer; font-weight: 800; font-family: 'Nunito'; font-size: 15px;" onclick="closeSummonModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         window.addEventListener('load', async () => {
             const token = localStorage.getItem('mangakan_token');
@@ -220,7 +299,7 @@
                     if (u.avatarUrl) {
                         document.getElementById('avatarIcon').style.display = 'none';
                         const img = document.getElementById('avatarImg');
-                        img.src = u.avatarUrl; // ✨ Using the Cloudinary URL directly
+                        img.src = u.avatarUrl; 
                         img.style.display = 'block';
                     } else {
                         document.getElementById('avatarIcon').innerText = u.username.charAt(0).toUpperCase();
@@ -231,20 +310,18 @@
                     document.getElementById('editUsername').value = u.username;
                     document.getElementById('editBio').value = u.bio || '';
 
-                    // Load Data
                     fetchMyMangas(token);
                     fetchMyFavorites(token);
-
                 } else {
                     logout(); 
                 }
             } catch (err) { console.error('Failed to load profile'); }
         });
 
-        // Edit Modal Logic
-        const modal = document.getElementById('editModal');
-        function openEditModal() { modal.classList.add('active'); }
-        function closeEditModal() { modal.classList.remove('active'); }
+        // --- EDIT PROFILE MODAL LOGIC ---
+        const editModal = document.getElementById('editModal');
+        function openEditModal() { editModal.classList.add('active'); }
+        function closeEditModal() { editModal.classList.remove('active'); }
         
         async function submitProfileUpdate() {
             const btn = document.getElementById('saveBtn');
@@ -287,6 +364,57 @@
             }
         }
 
+        // --- SUMMON MANGA MODAL LOGIC ---
+        const summonModal = document.getElementById('summonModal');
+        function openSummonModal() { summonModal.classList.add('active'); }
+        function closeSummonModal() { summonModal.classList.remove('active'); }
+
+        async function submitNewManga() {
+            const btn = document.getElementById('btnSummonManga');
+            const status = document.getElementById('summon-status');
+            const token = localStorage.getItem('mangakan_token');
+
+            btn.innerText = '⏳ Summoning...';
+            
+            const formData = new FormData();
+            formData.append('title', document.getElementById('mangaTitle').value);
+            formData.append('description', document.getElementById('mangaDesc').value);
+            
+            const genresInput = document.getElementById('mangaGenres').value;
+            const genresArray = genresInput.split(',').map(g => g.trim()).filter(g => g);
+            formData.append('genres', JSON.stringify(genresArray));
+            
+            const coverFile = document.getElementById('mangaCover').files[0];
+            if (coverFile) formData.append('coverArt', coverFile);
+
+            try {
+                const res = await fetch('/api/upload-manga', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    status.style.color = 'var(--primary)';
+                    status.innerText = 'Manga Summoned Successfully! ✨';
+                    status.style.display = 'block';
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    status.style.color = 'red';
+                    status.innerText = data.message || 'Summon failed ❌';
+                    status.style.display = 'block';
+                    btn.innerText = '✨ Summon';
+                }
+            } catch(e) {
+                status.style.color = 'red';
+                status.innerText = 'Server error ❌';
+                status.style.display = 'block';
+                btn.innerText = '✨ Summon';
+            }
+        }
+
+        // --- FETCH DATA LOGIC ---
         async function fetchMyMangas(token) {
             try {
                 const res = await fetch('/api/me/mangas', { headers: { 'Authorization': `Bearer ${token}` } });
@@ -294,17 +422,12 @@
                 const container = document.getElementById('myPublishedWorks');
                 
                 if (data.success && data.mangas.length > 0) {
-                    
-                    // ✨ CALCULATE TOTAL DASHBOARD STATS ✨
-                    let totalViews = 0;
-                    let totalLikes = 0;
+                    let totalViews = 0; let totalLikes = 0;
 
                     const cardsHtml = data.mangas.map(manga => {
                         const mViews = manga.views || 0;
                         const mLikes = manga.likes ? manga.likes.length : 0;
-                        
-                        totalViews += mViews;
-                        totalLikes += mLikes;
+                        totalViews += mViews; totalLikes += mLikes;
 
                         return `
                             <div class="manga-card">
@@ -324,14 +447,11 @@
                     }).join('');
 
                     container.innerHTML = `<div class="manga-grid">${cardsHtml}</div>`;
-
-                    // ✨ REVEAL DASHBOARD STATS ✨
                     document.getElementById('totalViews').innerText = totalViews;
                     document.getElementById('totalLikes').innerText = totalLikes;
                     document.getElementById('creatorStats').style.display = 'flex';
-
                 } else {
-                    container.innerHTML = '<div class="empty-state">You haven\'t published any magic yet. Go to the Home page to summon a manga!</div>';
+                    container.innerHTML = '<div class="empty-state">You haven\'t published any magic yet. Click "Summon Manga" to begin!</div>';
                 }
             } catch(e) { console.error(e); }
         }
@@ -375,16 +495,9 @@
            
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('✨ ServiceWorker registered successfully!');
-                    })
-                    .catch(err => {
-                        console.log('❌ ServiceWorker registration failed: ', err);
-                    });
+                navigator.serviceWorker.register('/service-worker.js').catch(err => console.log('SW setup skipped.'));
             });
         }
-    
     </script>
 </body>
 </html>
