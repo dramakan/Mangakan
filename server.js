@@ -421,15 +421,31 @@ app.delete('/api/mangas/:id', async (req, res) => {
     } catch (error) { res.status(500).json({ success: false, message: 'Error deleting.' }); }
 });
 
+// 🔍 ✨ UPGRADED SEARCH ALGORITHM ✨ 🔍
 app.get('/api/search', async (req, res) => {
     try {
         const { q, genre } = req.query;
         let query = {};
-        if (q) query.title = { $regex: q, $options: 'i' }; 
-        if (genre && genre !== 'All') query.genres = genre; 
+        
+        // 1. If the user types in the search bar, look in BOTH Title and Description (Case-Insensitive)
+        if (q) {
+            query.$or = [
+                { title: { $regex: q, $options: 'i' } },
+                { description: { $regex: q, $options: 'i' } }
+            ];
+        }
+        
+        // 2. If the user clicks a Genre, match it even if it has typos, spaces, or lowercase letters
+        if (genre && genre !== 'All') {
+            query.genres = { $regex: genre, $options: 'i' };
+        }
+        
         const mangas = await Manga.find(query).sort({ createdAt: -1 });
         res.json({ success: true, mangas });
-    } catch (error) { res.status(500).json({ success: false, message: 'Search magic failed.' }); }
+    } catch (error) { 
+        console.error("Search Error:", error);
+        res.status(500).json({ success: false, message: 'Search magic failed.' }); 
+    }
 });
 // 👑 ✨ NEW: GUILDMASTER DASHBOARD STATS ✨ 👑
 app.get('/api/admin/stats', async (req, res) => {
