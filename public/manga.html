@@ -72,7 +72,7 @@
         .stats-row { display: flex; justify-content: center; gap: 15px; font-size: 14px; font-weight: 800; color: var(--accent); margin-bottom: 20px; }
         .stats-row span { display: flex; align-items: center; gap: 5px; background: rgba(161, 140, 209, 0.08); padding: 6px 15px; border-radius: 12px;}
 
-        /* ✨ NEW: Read More Description Setup ✨ */
+        /* Read More Description Setup */
         .sidebar-desc { 
             font-size: 14px; color: var(--text-muted); margin-bottom: 5px; line-height: 1.7; font-weight: 600; text-align: center;
             display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
@@ -85,12 +85,21 @@
         }
         .read-more-btn:hover { color: var(--accent); transform: translateY(-2px); }
         
+        /* ✨ NATIVE SHARE BUTTON ✨ */
+        .btn-share { 
+            width: 100%; background: var(--bg-card); color: var(--accent); padding: 14px; border-radius: 16px; 
+            font-weight: 800; font-size: 14px; border: 2px dashed rgba(161, 140, 209, 0.4); cursor: pointer; 
+            transition: var(--transition); font-family: 'Nunito'; margin-bottom: 25px; display: flex; 
+            justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn-share:hover { background: rgba(161, 140, 209, 0.05); border-color: var(--accent); transform: translateY(-2px); }
+
         .action-row { display: flex; gap: 10px; margin-bottom: 25px; }
         .btn-action { flex: 1; background: rgba(255, 154, 158, 0.1); color: var(--primary); padding: 14px; border-radius: 16px; font-weight: 800; font-size: 14px; border: 2px solid transparent; cursor: pointer; transition: var(--transition); font-family: 'Nunito';}
         .btn-action:hover { background: var(--primary); color: white; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,154,158,0.3);}
         .btn-action.active { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 8px 20px rgba(161,140,209,0.3); }
 
-        .btn-primary { width: 100%; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 16px; border-radius: 18px; font-weight: 800; font-size: 16px; border: none; cursor: pointer; transition: var(--transition); box-shadow: 0 10px 25px rgba(255, 154, 158, 0.4); margin-bottom: 25px; display: flex; justify-content: center; align-items: center; gap: 10px;}
+        .btn-primary { width: 100%; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 16px; border-radius: 18px; font-weight: 800; font-size: 16px; border: none; cursor: pointer; transition: var(--transition); box-shadow: 0 10px 25px rgba(255, 154, 158, 0.4); margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 10px;}
         .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(161, 140, 209, 0.5); }
 
         .chapter-list { display: flex; flex-direction: column; gap: 10px; }
@@ -153,7 +162,7 @@
 
         /* --- ✨ MOBILE APP ALIGNMENT ✨ --- */
         @media (max-width: 850px) {
-            body { padding-bottom: 80px; } /* Ensure reader doesn't overlap app bar */
+            body { padding-bottom: 80px; } 
             header .desktop-nav { display: none; }
             header { justify-content: center; padding: 15px 5%; border-bottom: none; background: rgba(252, 252, 253, 0.9); box-shadow: none; z-index: 1000;}
             .bottom-nav { display: flex; }
@@ -200,6 +209,8 @@
             <button id="readMoreBtn" class="read-more-btn" onclick="toggleDesc()">✨ Read More</button>
             
             <button class="btn-primary" id="btnResume" onclick="resumeReading()" style="display: none;">📖 Resume Reading</button>
+
+            <button class="btn-share" onclick="shareManga()">📲 Share with Friends</button>
 
             <div class="action-row" id="actionRow" style="display:none;">
                 <button class="btn-action" id="btnLike" onclick="toggleLike()">🤍 Like</button>
@@ -292,14 +303,12 @@
         window.addEventListener('load', async () => {
             const token = localStorage.getItem('mangakan_token');
             if (token) {
-                // Desktop
                 const navBtn = document.getElementById('navBtn');
                 if(navBtn) {
                     navBtn.innerHTML = '🔮 My Profile';
                     navBtn.href = 'profile.html';
                 }
                 
-                // Mobile
                 const bottomAuth = document.getElementById('bottomAuthBtn');
                 if(bottomAuth) {
                     bottomAuth.href = 'profile.html';
@@ -328,6 +337,28 @@
             loadRelatedMangas();
         });
 
+        // ✨ NEW SHARE FUNCTION ✨
+        async function shareManga() {
+            const title = document.getElementById('sbTitle').innerText;
+            const shareData = {
+                title: title,
+                text: `✨ I'm reading "${title}" on Mangakan! Check it out:`,
+                url: window.location.href
+            };
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    // Fallback for Desktop browsers that don't support native share
+                    navigator.clipboard.writeText(window.location.href);
+                    alert("✨ Link copied to clipboard! Share it with your friends.");
+                }
+            } catch (err) {
+                console.log('Share magic cancelled.', err);
+            }
+        }
+
         async function loadMangaData() {
             try {
                 const res = await fetch(`/api/mangas/${currentMangaId}`);
@@ -342,7 +373,6 @@
                     document.getElementById('sbDesc').innerText = manga.description || '';
                     document.getElementById('sbGenre').innerText = (manga.genres && manga.genres.length > 0) ? manga.genres[0] : 'Magic';
                     
-                    // ✨ Show 'Read More' if description is taller than its container
                     setTimeout(() => {
                         const descEl = document.getElementById('sbDesc');
                         if (descEl.scrollHeight > descEl.clientHeight) {
@@ -385,7 +415,6 @@
             } catch(e) { console.error("Failed to load manga."); }
         }
 
-        // ✨ TOGGLE READ MORE LOGIC ✨
         function toggleDesc() {
             const desc = document.getElementById('sbDesc');
             const btn = document.getElementById('readMoreBtn');
