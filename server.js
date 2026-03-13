@@ -128,22 +128,17 @@ app.post('/api/google-auth', async (req, res) => {
     } catch (error) { res.status(500).json({ success: false, message: 'Google magic failed.' }); }
 });
 
-// ✨ NEW: STEP 1 - SEND OTP ✨
 app.post('/api/send-otp', async (req, res) => {
     try {
         const { username, email, password } = req.body;
         
-        // Check if email is already taken
         const existingUser = await User.findOne({ email });
         if (existingUser) return res.status(400).json({ success: false, message: 'Email already in use!' });
 
-        // Generate a 6-digit code
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         
-        // Save it in temporary memory for 5 minutes
         otpVault[email] = { otp, username, password, expires: Date.now() + 300000 };
 
-        // Send the email
         const mailOptions = {
             from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`,
             to: email,
@@ -168,7 +163,6 @@ app.post('/api/send-otp', async (req, res) => {
     }
 });
 
-// ✨ NEW: STEP 2 - VERIFY OTP & CREATE ACCOUNT ✨
 app.post('/api/verify-otp', async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -181,12 +175,10 @@ app.post('/api/verify-otp', async (req, res) => {
             return res.status(400).json({ success: false, message: 'OTP has expired. Please request a new one.' });
         }
 
-        // OTP is correct! Create the actual user
         const hashedPassword = await bcrypt.hash(storedData.password, 10);
         const newUser = new User({ username: storedData.username, email: email, password: hashedPassword });
         await newUser.save();
         
-        // Clean up the vault
         delete otpVault[email];
 
         const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -206,7 +198,7 @@ app.post('/api/login', async (req, res) => {
         res.json({ success: true, token, message: 'Welcome back!' });
     } catch (error) { res.status(500).json({ success: false, message: 'Error' }); }
 });
-// ✨ NEW: FORGOT PASSWORD (SEND OTP) ✨
+
 app.post('/api/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
@@ -214,7 +206,7 @@ app.post('/api/forgot-password', async (req, res) => {
         if (!user) return res.status(400).json({ success: false, message: 'No traveler found with this email!' });
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        resetVault[email] = { otp, expires: Date.now() + 300000 }; // 5 min expiry
+        resetVault[email] = { otp, expires: Date.now() + 300000 }; 
 
         const mailOptions = {
             from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`,
@@ -237,7 +229,6 @@ app.post('/api/forgot-password', async (req, res) => {
     }
 });
 
-// ✨ NEW: RESET PASSWORD (VERIFY OTP & UPDATE) ✨
 app.post('/api/reset-password', async (req, res) => {
     try {
         const { email, otp, newPassword } = req.body;
@@ -250,11 +241,10 @@ app.post('/api/reset-password', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Code has expired.' });
         }
 
-        // Code is correct! Hash the new password and update the user
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         await User.findOneAndUpdate({ email }, { password: hashedPassword });
         
-        delete resetVault[email]; // Clean up the vault
+        delete resetVault[email]; 
         res.json({ success: true, message: 'Password successfully updated!' });
 
     } catch (error) { res.status(500).json({ success: false, message: 'Error resetting password.' }); }
@@ -333,15 +323,51 @@ app.post('/api/upload-manga', mangaUploadFields, async (req, res) => {
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
+// ✨ UPGRADED: UPLOAD CHAPTER & NOTIFY SUBSCRIBERS ✨
 app.post('/api/upload-chapter', chapterUploadFields, async (req, res) => {
     try {
         const { mangaId, chapterNumber, title } = req.body;
         const pagesPaths = req.files ? req.files.map(file => file.path) : []; 
         const newChapter = new Chapter({ mangaId, chapterNumber, title, pages: pagesPaths });
         await newChapter.save();
-        res.json({ success: true, message: 'Chapter added!' });
+
+        // 🕊️ Trigger the messenger pigeons (Runs in background so it doesn't freeze the upload)
+        sendChapterNotifications(mangaId, chapterNumber, title).catch(err => console.log('Pigeon error:', err));
+
+        res.json({ success: true, message: 'Chapter added & Subscribers notified!' });
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
+
+// 🕊️ HELPER SPELL: Sends emails to anyone who favorited this manga
+async function sendChapterNotifications(mangaId, chapterNumber, chapterTitle) {
+    const manga = await Manga.findById(mangaId);
+    if (!manga) return;
+
+    // Find all users who have this manga's ID saved in their favorites array
+    const subscribers = await User.find({ favorites: mangaId });
+    if (subscribers.length === 0) return;
+
+    const chapterNameText = chapterTitle ? `- ${chapterTitle}` : '';
+    // The exact link to the specific chapter!
+    const mangaUrl = `https://mangakan.onrender.com/manga.html?id=${mangaId}&ch=${chapterNumber}`;
+
+    for (const sub of subscribers) {
+        const mailOptions = {
+            from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`,
+            to: sub.email,
+            subject: `✨ New Chapter: ${manga.title} Chapter ${chapterNumber} is out!`,
+            html: `
+                <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; color: #2d3142;">
+                    <h2 style="color: #ff9a9e;">A new scroll has been summoned!</h2>
+                    <p><strong>${manga.title}</strong> just released <strong>Chapter ${chapterNumber} ${chapterNameText}</strong>.</p>
+                    <a href="${mangaUrl}" style="display: inline-block; padding: 15px 30px; background: #a18cd1; color: white; text-decoration: none; border-radius: 20px; font-weight: bold; margin-top: 20px;">Read it now</a>
+                </div>
+            `
+        };
+        // Send email individually
+        await transporter.sendMail(mailOptions);
+    }
+}
 
 app.post('/api/mangas/:id/view', async (req, res) => {
     try {
@@ -421,13 +447,11 @@ app.delete('/api/mangas/:id', async (req, res) => {
     } catch (error) { res.status(500).json({ success: false, message: 'Error deleting.' }); }
 });
 
-// 🔍 ✨ UPGRADED SEARCH ALGORITHM ✨ 🔍
 app.get('/api/search', async (req, res) => {
     try {
         const { q, genre } = req.query;
         let query = {};
         
-        // 1. If the user types in the search bar, look in BOTH Title and Description (Case-Insensitive)
         if (q) {
             query.$or = [
                 { title: { $regex: q, $options: 'i' } },
@@ -435,7 +459,6 @@ app.get('/api/search', async (req, res) => {
             ];
         }
         
-        // 2. If the user clicks a Genre, match it even if it has typos, spaces, or lowercase letters
         if (genre && genre !== 'All') {
             query.genres = { $regex: genre, $options: 'i' };
         }
@@ -447,7 +470,7 @@ app.get('/api/search', async (req, res) => {
         res.status(500).json({ success: false, message: 'Search magic failed.' }); 
     }
 });
-// 👑 ✨ NEW: GUILDMASTER DASHBOARD STATS ✨ 👑
+
 app.get('/api/admin/stats', async (req, res) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
@@ -471,7 +494,6 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 });
 
-// 👑 ✨ NEW: GUILDMASTER BANISH MANGA ✨ 👑
 app.delete('/api/admin/mangas/:id', async (req, res) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
