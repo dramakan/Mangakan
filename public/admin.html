@@ -150,7 +150,14 @@
                 <div class="stat-label">Realm Views</div>
             </div>
         </div>
-
+<h2 class="section-title">📣 Send Realm Broadcast</h2>
+        <p style="color: var(--text-muted); margin-top: -15px; margin-bottom: 25px; font-weight: 600; font-size: 14px;">Send a custom push notification directly to the phones of everyone who allowed it!</p>
+        
+        <div style="background: var(--bg-card); padding: 30px; border-radius: 24px; box-shadow: var(--shadow-subtle); border: 2px solid rgba(161, 140, 209, 0.2); margin-bottom: 50px;">
+            <input type="text" id="bcTitle" placeholder="Notification Title (e.g. 🌸 Surprise!)" style="width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 2px solid rgba(161, 140, 209, 0.2); font-family: 'Nunito'; font-size: 15px; outline: none;">
+            <textarea id="bcMessage" placeholder="Notification Message (e.g. Chapter 4 is finally here!)" style="width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 2px solid rgba(161, 140, 209, 0.2); font-family: 'Nunito'; font-size: 15px; outline: none; resize: vertical; min-height: 80px;"></textarea>
+            <button onclick="sendAdminBroadcast()" style="background: linear-gradient(135deg, #a18cd1, var(--primary)); color: white; border: none; padding: 15px 30px; border-radius: 16px; font-weight: 800; font-family: 'Poppins'; cursor: pointer; width: 100%; box-shadow: 0 5px 15px rgba(161, 140, 209, 0.3); transition: transform 0.3s ease;">🚀 Broadcast to App Users</button>
+        </div>
         <h2 class="section-title">👥 Registered Travelers</h2>
         <div class="table-container">
             <table>
@@ -289,7 +296,28 @@ app.get('/api/admin/stats', async (req, res) => {
         res.status(500).json({ success: false, message: 'Admin magic failed.' });
     }
 });
+async function sendAdminBroadcast() {
+            const title = document.getElementById('bcTitle').value;
+            const message = document.getElementById('bcMessage').value;
+            if(!message) return alert("You need a message!");
 
+            const token = localStorage.getItem('mangakan_token');
+            try {
+                const res = await fetch('/api/admin/broadcast', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ title, message })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    alert(`✨ Magic Sent! ${data.message}`);
+                    document.getElementById('bcTitle').value = '';
+                    document.getElementById('bcMessage').value = '';
+                } else {
+                    alert("❌ Broadcast failed.");
+                }
+            } catch(e) { alert("Server error."); }
+        }
 // 👑 ✨ NEW: GUILDMASTER BANISH MANGA ✨ 👑
 app.delete('/api/admin/mangas/:id', async (req, res) => {
     try {
@@ -311,6 +339,7 @@ app.delete('/api/admin/mangas/:id', async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to banish manga.' });
     }
 });
+
     </script>
 </body>
 </html>
