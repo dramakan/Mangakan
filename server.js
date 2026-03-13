@@ -212,14 +212,35 @@ app.get('/api/continue-reading', async (req, res) => {
     } catch (error) { res.status(500).json({ success: false }); }
 });
 
+// ==========================================
+// 🪄 API ENDPOINTS
+// ==========================================
+
+// ✨ BULLETPROOF SAVE PHONE SUBSCRIPTION ✨
 app.post('/api/subscribe-push', async (req, res) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) return res.status(401).json({ success: false });
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        await User.findByIdAndUpdate(decoded.userId, { $addToSet: { pushSubscriptions: req.body } });
+        
+        const user = await User.findById(decoded.userId);
+        if (!user) return res.status(404).json({ success: false });
+
+        // Check if this exact phone is already saved
+        const exists = user.pushSubscriptions.find(sub => sub.endpoint === req.body.endpoint);
+        
+        // If it's a new phone, force it into the vault!
+        if (!exists) {
+            user.pushSubscriptions.push(req.body);
+            await user.save();
+            console.log("📲 New device registered for notifications!");
+        }
+        
         res.json({ success: true });
-    } catch (error) { res.status(500).json({ success: false }); }
+    } catch (error) { 
+        console.error("Notification Save Error:", error);
+        res.status(500).json({ success: false }); 
+    }
 });
 
 app.post('/api/admin/broadcast', async (req, res) => {
