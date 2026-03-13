@@ -72,7 +72,6 @@
         .stats-row { display: flex; justify-content: center; gap: 15px; font-size: 14px; font-weight: 800; color: var(--accent); margin-bottom: 20px; }
         .stats-row span { display: flex; align-items: center; gap: 5px; background: rgba(161, 140, 209, 0.08); padding: 6px 15px; border-radius: 12px;}
 
-        /* Read More Description Setup */
         .sidebar-desc { 
             font-size: 14px; color: var(--text-muted); margin-bottom: 5px; line-height: 1.7; font-weight: 600; text-align: center;
             display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
@@ -85,7 +84,6 @@
         }
         .read-more-btn:hover { color: var(--accent); transform: translateY(-2px); }
         
-        /* ✨ NATIVE SHARE BUTTON ✨ */
         .btn-share { 
             width: 100%; background: var(--bg-card); color: var(--accent); padding: 14px; border-radius: 16px; 
             font-weight: 800; font-size: 14px; border: 2px dashed rgba(161, 140, 209, 0.4); cursor: pointer; 
@@ -299,6 +297,7 @@
         let currentChapterIndex = -1;
         let currentUserId = null;
         let currentUserFavorites = []; 
+        let currentUserProgress = []; // ✨ NEW: Stores cloud progress
 
         window.addEventListener('load', async () => {
             const token = localStorage.getItem('mangakan_token');
@@ -324,6 +323,7 @@
                     if (meData.success) {
                         currentUserId = meData.user._id;
                         currentUserFavorites = meData.user.favorites || [];
+                        currentUserProgress = meData.user.readingProgress || []; // Load cloud progress
                     }
                 } catch(e) {}
             }
@@ -337,26 +337,22 @@
             loadRelatedMangas();
         });
 
-        // ✨ NEW SHARE FUNCTION ✨
         async function shareManga() {
             const title = document.getElementById('sbTitle').innerText;
+            const urlParams = new URLSearchParams(window.location.search);
+            const ch = urlParams.get('ch');
+            const chapterText = ch ? ` Chapter ${ch}` : '';
+            
             const shareData = {
                 title: title,
-                text: `✨ I'm reading "${title}" on Mangakan! Check it out:`,
-                url: window.location.href
+                text: `✨ I'm reading "${title}"${chapterText} on Mangakan! Check it out:`,
+                url: window.location.href 
             };
 
             try {
-                if (navigator.share) {
-                    await navigator.share(shareData);
-                } else {
-                    // Fallback for Desktop browsers that don't support native share
-                    navigator.clipboard.writeText(window.location.href);
-                    alert("✨ Link copied to clipboard! Share it with your friends.");
-                }
-            } catch (err) {
-                console.log('Share magic cancelled.', err);
-            }
+                if (navigator.share) { await navigator.share(shareData); } 
+                else { navigator.clipboard.writeText(window.location.href); alert("✨ Link copied to clipboard!"); }
+            } catch (err) { console.log('Share cancelled.'); }
         }
 
         async function loadMangaData() {
@@ -375,15 +371,22 @@
                     
                     setTimeout(() => {
                         const descEl = document.getElementById('sbDesc');
-                        if (descEl.scrollHeight > descEl.clientHeight) {
-                            document.getElementById('readMoreBtn').style.display = 'block';
-                        }
+                        if (descEl.scrollHeight > descEl.clientHeight) { document.getElementById('readMoreBtn').style.display = 'block'; }
                     }, 50);
                     
                     document.getElementById('viewCount').innerText = `👁️ ${manga.views + 1}`; 
                     document.getElementById('likeCount').innerText = `❤️ ${manga.likes.length}`;
 
-                    let savedProgress = localStorage.getItem('mangakan_progress_' + currentMangaId);
+                    // ✨ NEW: Check Cloud Progress First! ✨
+                    let savedProgress = null;
+                    if (currentUserId && currentUserProgress.length > 0) {
+                        const cloudProg = currentUserProgress.find(p => p.mangaId === currentMangaId);
+                        if (cloudProg) savedProgress = cloudProg.chapterIndex;
+                    }
+                    if (savedProgress === null) {
+                        savedProgress = localStorage.getItem('mangakan_progress_' + currentMangaId);
+                    }
+
                     if (savedProgress !== null && chaptersData[savedProgress]) {
                         const resumeBtn = document.getElementById('btnResume');
                         resumeBtn.style.display = 'flex';
@@ -411,6 +414,13 @@
                     }
 
                     renderChapterList();
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const requestedCh = urlParams.get('ch');
+                    if (requestedCh) {
+                        const targetIndex = chaptersData.findIndex(c => c.chapterNumber == requestedCh);
+                        if (targetIndex !== -1) { loadChapter(targetIndex); }
+                    }
                 }
             } catch(e) { console.error("Failed to load manga."); }
         }
@@ -423,12 +433,15 @@
         }
 
         function resumeReading() {
-            let savedProgress = localStorage.getItem('mangakan_progress_' + currentMangaId);
-            if (savedProgress !== null) {
-                loadChapter(parseInt(savedProgress));
-            } else if (chaptersData.length > 0) {
-                loadChapter(0);
+            let savedProgress = null;
+            if (currentUserId && currentUserProgress.length > 0) {
+                const cloudProg = currentUserProgress.find(p => p.mangaId === currentMangaId);
+                if (cloudProg) savedProgress = cloudProg.chapterIndex;
             }
+            if (savedProgress === null) savedProgress = localStorage.getItem('mangakan_progress_' + currentMangaId);
+
+            if (savedProgress !== null) { loadChapter(parseInt(savedProgress)); } 
+            else if (chaptersData.length > 0) { loadChapter(0); }
         }
 
         async function loadRelatedMangas() {
@@ -438,7 +451,6 @@
                 if (data.success) {
                     const others = data.mangas.filter(m => m._id !== currentMangaId);
                     const shuffled = others.sort(() => 0.5 - Math.random()).slice(0, 4);
-                    
                     if(shuffled.length > 0) {
                         document.getElementById('relatedGrid').innerHTML = shuffled.map(m => `
                             <div class="related-card" onclick="window.location.href='manga.html?id=${m._id}'">
@@ -446,9 +458,7 @@
                                 <div class="related-title">${m.title}</div>
                             </div>
                         `).join('');
-                    } else {
-                        document.getElementById('relatedGrid').innerHTML = '<div style="color: rgba(255,255,255,0.4); font-size: 14px;">No other magic discovered yet.</div>';
-                    }
+                    } else { document.getElementById('relatedGrid').innerHTML = '<div style="color: rgba(255,255,255,0.4); font-size: 14px;">No other magic discovered yet.</div>'; }
                 }
             } catch(e) {}
         }
@@ -465,7 +475,7 @@
                     if (data.isLiked) { btnLike.classList.add('active'); btnLike.innerHTML = '❤️ Liked'; } 
                     else { btnLike.classList.remove('active'); btnLike.innerHTML = '🤍 Like'; }
                 }
-            } catch(e) { alert("Failed to cast Like spell."); }
+            } catch(e) {}
         }
 
         async function toggleFavorite() {
@@ -478,7 +488,7 @@
                     if (data.isFavorited) { btnSub.classList.add('active'); btnSub.innerHTML = '💖 Subscribed'; currentUserFavorites.push(currentMangaId); } 
                     else { btnSub.classList.remove('active'); btnSub.innerHTML = '✨ Subscribe'; currentUserFavorites = currentUserFavorites.filter(id => id !== currentMangaId); }
                 }
-            } catch(e) { alert("Server magic fizzled out!"); }
+            } catch(e) {}
         }
 
         async function loadComments() {
@@ -496,9 +506,7 @@
                             </div>
                         </div>
                     `).join('');
-                } else {
-                    list.innerHTML = '<div style="color: rgba(255,255,255,0.4); font-size: 14px; font-style: italic; text-align: center; padding: 20px;">Be the first to speak in this realm...</div>';
-                }
+                } else { list.innerHTML = '<div style="color: rgba(255,255,255,0.4); font-size: 14px; font-style: italic; text-align: center; padding: 20px;">Be the first to speak in this realm...</div>'; }
             } catch(e) { }
         }
 
@@ -511,7 +519,7 @@
                 const res = await fetch(`/api/mangas/${currentMangaId}/comment`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ text }) });
                 const data = await res.json();
                 if (data.success) { input.value = ''; loadComments(); }
-            } catch(e) { alert("Failed to post comment."); }
+            } catch(e) {}
         }
 
         function renderChapterList() {
@@ -530,19 +538,32 @@
             currentChapterIndex = index;
             renderChapterList(); 
             
-            localStorage.setItem('mangakan_progress_' + currentMangaId, index);
+            const chNum = chaptersData[index].chapterNumber;
             
+            // Backup Local Save
+            localStorage.setItem('mangakan_progress_' + currentMangaId, index);
+
+            // ✨ NEW: SAVE DIRECTLY TO CLOUD! ✨
+            if (currentUserId) {
+                const token = localStorage.getItem('mangakan_token');
+                fetch('/api/save-progress', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ mangaId: currentMangaId, chapterIndex: index, chapterNumber: chNum })
+                });
+            }
+            
+            window.history.replaceState(null, '', `?id=${currentMangaId}&ch=${chNum}`);
+
             const resumeBtn = document.getElementById('btnResume');
-            if(resumeBtn) { resumeBtn.innerHTML = `📖 Resume Ch. ${chaptersData[index].chapterNumber}`; }
+            if(resumeBtn) { resumeBtn.innerHTML = `📖 Resume Ch. ${chNum}`; }
 
             const chapter = chaptersData[index];
             const container = document.getElementById('pagesContainer');
             
             if (chapter.pages && chapter.pages.length > 0) {
                 container.innerHTML = chapter.pages.map(img => `<img src="${img}" loading="lazy">`).join('');
-            } else {
-                container.innerHTML = '<div class="loading-text">No pages found in this chapter!</div>';
-            }
+            } else { container.innerHTML = '<div class="loading-text">No pages found in this chapter!</div>'; }
 
             document.getElementById('readerScroll').scrollTo(0,0);
             
@@ -556,7 +577,6 @@
             const num = document.getElementById('chNumber').value;
             const title = document.getElementById('chTitle').value;
             const pages = document.getElementById('chPages').files;
-            
             if(!num || pages.length === 0) return alert("You need a chapter number and at least one image page!");
 
             const btn = document.getElementById('uploadBtn');
@@ -579,10 +599,7 @@
                     document.getElementById('chTitle').value = '';
                     document.getElementById('chPages').value = '';
                 }
-            } catch(e) { 
-                alert("Upload failed. Is the server running?"); 
-                btn.innerText = "🚀 Publish Chapter"; 
-            }
+            } catch(e) { btn.innerText = "🚀 Publish Chapter"; }
         }
         
         if ('serviceWorker' in navigator) {

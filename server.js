@@ -69,6 +69,13 @@ const userSchema = new mongoose.Schema({
     bio: { type: String, default: '' },      
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Manga' }], 
     pushSubscriptions: [{ type: Object }],
+    // ✨ NEW: The Cloud Traveler's Log ✨
+    readingProgress: [{ 
+        mangaId: { type: mongoose.Schema.Types.ObjectId, ref: 'Manga' }, 
+        chapterIndex: Number,
+        chapterNumber: Number,
+        lastReadAt: { type: Date, default: Date.now }
+    }],
     createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.model('User', userSchema);
@@ -118,6 +125,49 @@ const createCuteEmail = (title, message, bigText, subText) => `
 // 🪄 API ENDPOINTS
 // ==========================================
 
+// ✨ NEW: SAVE CLOUD PROGRESS ✨
+app.post('/api/save-progress', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ success: false });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const { mangaId, chapterIndex, chapterNumber } = req.body;
+        
+        const user = await User.findById(decoded.userId);
+        if (!user) return res.status(404).json({ success: false });
+
+        const progressIndex = user.readingProgress.findIndex(p => p.mangaId.toString() === mangaId);
+        if (progressIndex > -1) {
+            user.readingProgress[progressIndex].chapterIndex = chapterIndex;
+            user.readingProgress[progressIndex].chapterNumber = chapterNumber;
+            user.readingProgress[progressIndex].lastReadAt = Date.now();
+        } else {
+            user.readingProgress.push({ mangaId, chapterIndex, chapterNumber });
+        }
+        await user.save();
+        res.json({ success: true });
+    } catch (error) { res.status(500).json({ success: false }); }
+});
+
+// ✨ NEW: FETCH CONTINUED READING ✨
+app.get('/api/continue-reading', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ success: false });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        const user = await User.findById(decoded.userId).populate({ path: 'readingProgress.mangaId', model: 'Manga' });
+        if (!user) return res.status(404).json({ success: false });
+
+        const validProgress = user.readingProgress
+            .filter(p => p.mangaId !== null)
+            .sort((a, b) => b.lastReadAt - a.lastReadAt)
+            .slice(0, 4); // Show top 4 recent reads
+        
+        res.json({ success: true, progress: validProgress });
+    } catch (error) { res.status(500).json({ success: false }); }
+});
+
 app.post('/api/subscribe-push', async (req, res) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
@@ -128,7 +178,6 @@ app.post('/api/subscribe-push', async (req, res) => {
     } catch (error) { res.status(500).json({ success: false }); }
 });
 
-// ✨ NEW: ADMIN BROADCAST CUSTOM NOTIFICATION ✨
 app.post('/api/admin/broadcast', async (req, res) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
@@ -176,7 +225,6 @@ cron.schedule('0 15 * * *', async () => {
     } catch (err) { console.error(err); }
 });
 
-// ✨ GOOGLE AUTH WITH WELCOME EMAIL
 app.post('/api/google-auth', async (req, res) => {
     try {
         const { token } = req.body;
@@ -189,7 +237,6 @@ app.post('/api/google-auth', async (req, res) => {
             user = new User({ username: name, email: email, password: randomPassword, avatarUrl: picture });
             await user.save();
 
-            // Send Cute Welcome Email to new Google Users
             const mailOptions = {
                 from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`, to: email,
                 subject: '🌸 Welcome to the Mangakan Realm!',
@@ -236,7 +283,6 @@ app.post('/api/verify-otp', async (req, res) => {
         await newUser.save();
         delete otpVault[email];
 
-        // Send Welcome Email upon normal signup completion
         const mailOptions = {
             from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`, to: email,
             subject: '🌸 Welcome to the Mangakan Realm!',
@@ -358,7 +404,7 @@ app.get('/api/me/favorites', async (req, res) => {
 app.post('/api/upload-manga', mangaUploadFields, async (req, res) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
-        if (!token) return res.status(401).json({ success: false, message: 'Must be logged in!' });
+        if (!token) return res.status(401).json({ success: false, message: 'Must be logged in to summon!' });
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { title, description, genres } = req.body;
         const coverArtPath = req.files['coverArt'][0].path; 

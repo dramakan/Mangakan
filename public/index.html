@@ -180,6 +180,16 @@
         </div>
     </section>
 
+    <section class="section-container" id="continueReadingSection" style="display: none; padding-top: 20px;">
+        <div class="section-header" style="border-bottom: none;">
+            <h2 class="section-title">☁️ Your Traveler's Log</h2>
+            <span style="color: var(--text-muted); font-weight: 700; font-size: 15px;">Pick up right where you left off</span>
+        </div>
+        <div class="manga-grid" id="continueGrid" style="margin-bottom: 20px;">
+            <div class="loading-state">⏳ Checking your magic bookmark...</div>
+        </div>
+    </section>
+
     <section class="section-container">
         <div class="section-header">
             <h2 class="section-title">🔥 Trending Masterpieces</h2>
@@ -234,69 +244,48 @@
         // --- AUTH CHECKER ---
         const token = localStorage.getItem('mangakan_token');
         if (token) {
-            // Update Desktop Top Nav
             document.getElementById('authNavArea').innerHTML = '<a href="profile.html" class="nav-auth-btn" style="background: var(--text-dark);">🔮 My Profile</a>';
-            
-            // Update Mobile Bottom Nav
             const bottomAuth = document.getElementById('bottomAuthBtn');
             if(bottomAuth) {
                 bottomAuth.href = 'profile.html';
                 bottomAuth.innerHTML = '<span class="nav-icon">🔮</span><span class="nav-label">Profile</span>';
             }
+
+            // ✨ NEW: LOAD TRAVELER'S LOG IF LOGGED IN ✨
+            fetch('/api/continue-reading', { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.progress.length > 0) {
+                    document.getElementById('continueReadingSection').style.display = 'block';
+                    document.getElementById('continueGrid').innerHTML = data.progress.map(p => `
+                        <div class="manga-card" onclick="window.location.href='manga.html?id=${p.mangaId._id}&ch=${p.chapterNumber}'">
+                            <div class="card-img-wrapper">
+                                <img src="${p.mangaId.coverArt}" alt="${p.mangaId.title}">
+                            </div>
+                            <div class="manga-info">
+                                <div class="manga-title">${p.mangaId.title}</div>
+                                <button style="background: rgba(161, 140, 209, 0.1); color: var(--accent); border: 2px solid transparent; padding: 10px; border-radius: 14px; font-weight: 800; width: 100%; margin-top: 5px; cursor: pointer; font-family: 'Nunito'; transition: var(--transition);" onmouseover="this.style.background='var(--accent)'; this.style.color='white';" onmouseout="this.style.background='rgba(161, 140, 209, 0.1)'; this.style.color='var(--accent)';">📖 Resume Ch. ${p.chapterNumber}</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('continueReadingSection').style.display = 'none';
+                }
+            });
         }
 
         function checkSummonAccess() {
             if (token) { window.location.href = 'profile.html'; } 
             else { window.location.href = 'login.html'; }
         }
-// ✨ ASK TO SEND CUTE NOTIFICATIONS ✨
-        async function setupPushNotifications() {
-            const token = localStorage.getItem('mangakan_token');
-            if (!token) return; // Only ask logged-in users
 
-            if ('serviceWorker' in navigator && 'PushManager' in window) {
-                const registration = await navigator.serviceWorker.ready;
-                const existingSub = await registration.pushManager.getSubscription();
-                
-                // If they are already subscribed, we do nothing!
-                if (existingSub) return;
-
-                try {
-                    // Convert the VAPID key to a secure format
-                    const publicVapidKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBtc3sHKEB2z0OPQ0-lP_WkE4';
-                    const padding = '='.repeat((4 - publicVapidKey.length % 4) % 4);
-                    const base64 = (publicVapidKey + padding).replace(/\-/g, '+').replace(/_/g, '/');
-                    const rawData = window.atob(base64);
-                    const outputArray = new Uint8Array(rawData.length);
-                    for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
-
-                    // Ask for permission! (Browser will show a popup)
-                    const subscription = await registration.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: outputArray
-                    });
-
-                    // Save their phone securely in our vault
-                    await fetch('/api/subscribe-push', {
-                        method: 'POST',
-                        body: JSON.stringify(subscription),
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
-                    });
-                    console.log("🌸 Notifications enabled!");
-                } catch (err) { console.log("User denied notifications."); }
-            }
-        }
-
-       // ✨ NEW UI FOR PERMISSION ✨
+        // ✨ ASK TO SEND CUTE NOTIFICATIONS ✨
         window.addEventListener('load', async () => {
-            const token = localStorage.getItem('mangakan_token');
             if (!token) return;
-
             if ('serviceWorker' in navigator && 'PushManager' in window) {
                 const registration = await navigator.serviceWorker.ready;
                 const existingSub = await registration.pushManager.getSubscription();
                 
-                // If they haven't subscribed yet, show the beautiful floating button
                 if (!existingSub) {
                     const prompt = document.createElement('div');
                     prompt.innerHTML = `
@@ -307,7 +296,6 @@
                     `;
                     document.body.appendChild(prompt);
 
-                    // When they click it, ask permission legally
                     document.getElementById('pushPrompt').onclick = async () => {
                         try {
                             const publicVapidKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBtc3sHKEB2z0OPQ0-lP_WkE4';
@@ -333,6 +321,7 @@
                 }
             }
         });
+
         // --- 🧠 THE ALGORITHM ALCHEMY ---
         window.addEventListener('load', async () => {
             try {
@@ -363,12 +352,8 @@
 
         function renderGrid(containerId, mangaArray) {
             const container = document.getElementById(containerId);
+            if (mangaArray.length === 0) return container.innerHTML = '<div class="empty-state">Nothing to see here yet.</div>';
             
-            if (mangaArray.length === 0) {
-                container.innerHTML = '<div class="empty-state">Nothing to see here yet.</div>';
-                return;
-            }
-
             container.innerHTML = mangaArray.map(manga => {
                 const genreText = (manga.genres && manga.genres.length > 0) ? manga.genres[0] : 'Magic';
                 const viewsCount = manga.views || 0;
