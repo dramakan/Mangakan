@@ -249,7 +249,48 @@
             if (token) { window.location.href = 'profile.html'; } 
             else { window.location.href = 'login.html'; }
         }
+// ✨ ASK TO SEND CUTE NOTIFICATIONS ✨
+        async function setupPushNotifications() {
+            const token = localStorage.getItem('mangakan_token');
+            if (!token) return; // Only ask logged-in users
 
+            if ('serviceWorker' in navigator && 'PushManager' in window) {
+                const registration = await navigator.serviceWorker.ready;
+                const existingSub = await registration.pushManager.getSubscription();
+                
+                // If they are already subscribed, we do nothing!
+                if (existingSub) return;
+
+                try {
+                    // Convert the VAPID key to a secure format
+                    const publicVapidKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBtc3sHKEB2z0OPQ0-lP_WkE4';
+                    const padding = '='.repeat((4 - publicVapidKey.length % 4) % 4);
+                    const base64 = (publicVapidKey + padding).replace(/\-/g, '+').replace(/_/g, '/');
+                    const rawData = window.atob(base64);
+                    const outputArray = new Uint8Array(rawData.length);
+                    for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+
+                    // Ask for permission! (Browser will show a popup)
+                    const subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: outputArray
+                    });
+
+                    // Save their phone securely in our vault
+                    await fetch('/api/subscribe-push', {
+                        method: 'POST',
+                        body: JSON.stringify(subscription),
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                    });
+                    console.log("🌸 Notifications enabled!");
+                } catch (err) { console.log("User denied notifications."); }
+            }
+        }
+
+        // Call the setup after the page loads
+        window.addEventListener('load', () => {
+            setTimeout(setupPushNotifications, 3000); // Ask 3 seconds after they open the app
+        });
         // --- 🧠 THE ALGORITHM ALCHEMY ---
         window.addEventListener('load', async () => {
             try {

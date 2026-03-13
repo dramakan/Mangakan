@@ -9,9 +9,11 @@ const jwt = require('jsonwebtoken');
 const { v2: cloudinary } = require('cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const { OAuth2Client } = require('google-auth-library');
-
-// ✨ NEW: Import Email Magic
 const nodemailer = require('nodemailer');
+
+// ✨ NEW: Import Push Notifications & Timers
+const webpush = require('web-push');
+const cron = require('node-cron');
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const app = express();
@@ -37,9 +39,18 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-/// Temporary memory vault to hold OTPs before the account is fully created
+// ==========================================
+// 🔔 PUSH NOTIFICATION SETUP
+// ==========================================
+webpush.setVapidDetails(
+    `mailto:${process.env.EMAIL_USER}`,
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+);
+
+/// Temporary memory vaults
 const otpVault = {}; 
-const resetVault = {}; // ✨ NEW: Memory vault for password resets
+const resetVault = {}; 
 
 // ==========================================
 // ☁️ CLOUDINARY UPLOAD CONFIGURATION
@@ -71,6 +82,7 @@ const userSchema = new mongoose.Schema({
     avatarUrl: { type: String, default: '' }, 
     bio: { type: String, default: '' },      
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Manga' }], 
+    pushSubscriptions: [{ type: Object }], // ✨ Stores their phone's notification ID
     createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.model('User', userSchema);
@@ -109,6 +121,48 @@ const Comment = mongoose.model('Comment', commentSchema);
 // ==========================================
 // 🪄 API ENDPOINTS
 // ==========================================
+
+// ✨ SAVE PHONE SUBSCRIPTION ✨
+app.post('/api/subscribe-push', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ success: false });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        const subscription = req.body;
+        await User.findByIdAndUpdate(decoded.userId, { 
+            $addToSet: { pushSubscriptions: subscription } 
+        });
+        res.json({ success: true });
+    } catch (error) { res.status(500).json({ success: false }); }
+});
+
+// ✨ THE CUTE NOTIFICATION BOT (Runs every day at 3:00 PM) ✨
+cron.schedule('0 15 * * *', async () => {
+    console.log("🌸 Sending cute daily reminders to travelers...");
+    const cuteMessages = [
+        { title: "🌸 Jash & Anna are waiting...", body: "Did you forget about them? Come read the next chapter of Where our messages faded!" },
+        { title: "🥺 The library is so quiet...", body: "The Mangakan mascot is lonely! Come read a quick chapter and say hi! 👋" },
+        { title: "✨ Your magical scrolls miss you!", body: "We saved your spot. Come back and explore new realms today. 📖" },
+        { title: "🔮 Need a quick break?", body: "Take 5 minutes to relax and read a cute comic chapter on Mangakan." }
+    ];
+
+    const randomMsg = cuteMessages[Math.floor(Math.random() * cuteMessages.length)];
+    const payload = JSON.stringify({ title: randomMsg.title, body: randomMsg.body, url: "https://mangakan.onrender.com/" });
+
+    try {
+        const users = await User.find({ pushSubscriptions: { $exists: true, $not: {$size: 0} } });
+        for (const user of users) {
+            for (const sub of user.pushSubscriptions) {
+                webpush.sendNotification(sub, payload).catch(err => {
+                    if (err.statusCode === 410 || err.statusCode === 404) {
+                        User.findByIdAndUpdate(user._id, { $pull: { pushSubscriptions: sub } }).exec();
+                    }
+                });
+            }
+        }
+    } catch (err) { console.error("Cron Error:", err); }
+});
 
 app.post('/api/google-auth', async (req, res) => {
     try {
@@ -323,7 +377,7 @@ app.post('/api/upload-manga', mangaUploadFields, async (req, res) => {
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
-// ✨ UPGRADED: UPLOAD CHAPTER & NOTIFY SUBSCRIBERS ✨
+// ✨ UPLOAD CHAPTER & NOTIFY SUBSCRIBERS ✨
 app.post('/api/upload-chapter', chapterUploadFields, async (req, res) => {
     try {
         const { mangaId, chapterNumber, title } = req.body;
@@ -331,27 +385,23 @@ app.post('/api/upload-chapter', chapterUploadFields, async (req, res) => {
         const newChapter = new Chapter({ mangaId, chapterNumber, title, pages: pagesPaths });
         await newChapter.save();
 
-        // 🕊️ Trigger the messenger pigeons (Runs in background so it doesn't freeze the upload)
         sendChapterNotifications(mangaId, chapterNumber, title).catch(err => console.log('Pigeon error:', err));
-
         res.json({ success: true, message: 'Chapter added & Subscribers notified!' });
     } catch (error) { res.status(500).json({ success: false, message: 'Server error' }); }
 });
 
-// 🕊️ HELPER SPELL: Sends emails to anyone who favorited this manga
 async function sendChapterNotifications(mangaId, chapterNumber, chapterTitle) {
     const manga = await Manga.findById(mangaId);
     if (!manga) return;
-
-    // Find all users who have this manga's ID saved in their favorites array
     const subscribers = await User.find({ favorites: mangaId });
     if (subscribers.length === 0) return;
 
     const chapterNameText = chapterTitle ? `- ${chapterTitle}` : '';
-    // The exact link to the specific chapter!
     const mangaUrl = `https://mangakan.onrender.com/manga.html?id=${mangaId}&ch=${chapterNumber}`;
+    const payload = JSON.stringify({ title: `✨ New Chapter: ${manga.title}`, body: `Chapter ${chapterNumber} ${chapterNameText} is out!`, url: mangaUrl });
 
     for (const sub of subscribers) {
+        // Send Email
         const mailOptions = {
             from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`,
             to: sub.email,
@@ -364,8 +414,14 @@ async function sendChapterNotifications(mangaId, chapterNumber, chapterTitle) {
                 </div>
             `
         };
-        // Send email individually
-        await transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions).catch(e => {});
+
+        // Send Push Notification
+        if (sub.pushSubscriptions && sub.pushSubscriptions.length > 0) {
+            for (const pushSub of sub.pushSubscriptions) {
+                webpush.sendNotification(pushSub, payload).catch(e => {});
+            }
+        }
     }
 }
 
