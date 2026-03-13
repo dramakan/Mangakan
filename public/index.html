@@ -4,25 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mangakan | Your Magical Manga Realm</title>
-    <meta name="title" content="Mangakan | Your Magical Manga Realm">
-    <meta name="description" content="Discover, read, and summon your favorite manga stories in a beautifully crafted sanctuary designed just for you.">
-    <meta name="author" content="Karash">
-    <meta name="theme-color" content="#fcfcfd"> <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mangakan.onrender.com/">
-    <meta property="og:title" content="Mangakan | Your Magical Manga Realm">
-    <meta property="og:description" content="Discover, read, and summon your favorite manga stories in a beautifully crafted sanctuary designed just for you.">
-    <meta property="og:image" content="https://mangakan.onrender.com/og-image.jpg">
-    <meta property="og:site_name" content="Mangakan">
-
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://mangakan.onrender.com/">
-    <meta property="twitter:title" content="Mangakan | Your Magical Manga Realm">
-    <meta property="twitter:description" content="Discover, read, and summon your favorite manga stories in a beautifully crafted sanctuary designed just for you.">
-    <meta property="twitter:image" content="https://mangakan.onrender.com/og-image.jpg">
-
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="theme-color" content="#fcfcfd"> 
+    
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -52,7 +36,6 @@
 
         h1, h2, h3, .logo, nav a, .btn, .nav-label { font-family: 'Poppins', sans-serif; }
 
-        /* --- DESKTOP NAVBAR --- */
         header {
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px);
             padding: 18px 5%; display: flex; justify-content: space-between; align-items: center;
@@ -62,37 +45,21 @@
         .desktop-nav ul { display: flex; list-style: none; gap: 35px; align-items: center;}
         .desktop-nav a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 16px; transition: var(--transition); position: relative; }
         .desktop-nav a:hover { color: var(--text-dark); }
-        .desktop-nav a::after { content: '✨'; position: absolute; font-size: 10px; top: -10px; right: -10px; opacity: 0; transition: var(--transition); transform: scale(0); }
-        .desktop-nav a:hover::after { opacity: 1; transform: scale(1); } 
         
         .nav-auth-btn { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white !important; padding: 10px 24px; border-radius: 20px; font-weight: 700 !important; box-shadow: 0 5px 15px rgba(255, 154, 158, 0.3); transition: var(--transition); }
         .nav-auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(161, 140, 209, 0.4); color: white !important; }
-        .nav-auth-btn::after { display: none !important; }
 
-        /* --- ✨ MOBILE BOTTOM APP BAR (HIDDEN ON DESKTOP) ✨ --- */
         .bottom-nav {
-            display: none;
-            position: fixed; bottom: 0; left: 0; width: 100%;
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%;
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 154, 158, 0.2);
-            z-index: 2000;
-            padding-bottom: env(safe-area-inset-bottom); /* iOS safe area */
-            box-shadow: 0 -5px 20px rgba(161, 140, 209, 0.08);
+            border-top: 1px solid rgba(255, 154, 158, 0.2); z-index: 2000;
+            padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -5px 20px rgba(161, 140, 209, 0.08);
         }
-        .bottom-nav-item {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 12px 0; color: var(--text-muted); text-decoration: none; transition: var(--transition);
-        }
+        .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; color: var(--text-muted); text-decoration: none; transition: var(--transition); }
         .bottom-nav-item:hover, .bottom-nav-item.active { color: var(--primary); }
         .nav-icon { font-size: 22px; margin-bottom: 4px; transition: var(--transition); }
-        .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-3px); }
-        .nav-label { font-size: 11px; font-weight: 700; }
-
-        /* --- HERO SECTION --- */
-        .hero { padding: 80px 5%; text-align: center; position: relative; overflow: hidden; }
-        .hero::before { content: '🌸'; position: absolute; top: 20px; left: 15%; font-size: 50px; opacity: 0.6; animation: floatHero 4s infinite alternate; }
-        .hero::after { content: '✨'; position: absolute; bottom: 30px; right: 15%; font-size: 35px; opacity: 0.6; animation: floatHero 3s infinite alternate-reverse; }
         
+        .hero { padding: 80px 5%; text-align: center; position: relative; overflow: hidden; }
         .hero-title { font-size: 48px; font-weight: 800; color: var(--text-dark); margin-bottom: 20px; line-height: 1.2;}
         .hero-title span { background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-subtitle { font-size: 18px; color: var(--text-muted); font-weight: 600; max-width: 600px; margin: 0 auto 40px auto; line-height: 1.6;}
@@ -102,21 +69,20 @@
         .btn-secondary { background: rgba(255, 154, 158, 0.1); color: var(--primary); padding: 16px 40px; border-radius: 30px; font-size: 18px; font-weight: 800; text-decoration: none; display: inline-block; transition: var(--transition); margin-left: 15px; border: 2px solid transparent;}
         .btn-secondary:hover { background: rgba(255, 154, 158, 0.2); border-color: var(--primary); transform: translateY(-5px); }
 
-        /* --- MANGA GRIDS --- */
+        /* ✨ NEW PUSH BUTTON STYLE ✨ */
+        .btn-push { display: none; background: #ffffff; color: var(--primary); padding: 12px 30px; border-radius: 20px; font-size: 16px; font-weight: 800; border: 2px dashed var(--primary); cursor: pointer; transition: var(--transition); margin-top: 25px; font-family: 'Nunito'; box-shadow: 0 5px 15px rgba(255,154,158,0.15); }
+        .btn-push:hover { background: var(--primary); color: white; border-style: solid; transform: translateY(-3px); }
+
         .section-container { padding: 60px 5%; max-width: 1400px; margin: 0 auto; width: 100%;}
         .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 3px dashed rgba(255, 154, 158, 0.3); padding-bottom: 15px;}
         .section-title { font-size: 28px; font-weight: 800; color: var(--text-dark); }
         .view-all { color: var(--accent); text-decoration: none; font-weight: 800; font-size: 15px; transition: var(--transition); }
-        .view-all:hover { color: var(--primary); transform: translateX(5px); }
-
-        .manga-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; }
         
+        .manga-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; }
         .manga-card { background: var(--bg-card); border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-subtle); border: 2px solid #fff; transition: var(--transition); display: flex; flex-direction: column; cursor: pointer; position: relative;}
         .manga-card:hover { transform: translateY(-10px) rotate(1deg); box-shadow: var(--shadow-hover); border-color: rgba(255,154,158,0.4); }
-        
         .card-img-wrapper { position: relative; padding: 10px 10px 0 10px; }
         .manga-card img { width: 100%; height: 280px; object-fit: cover; border-radius: 18px; transition: var(--transition);}
-        .manga-card:hover img { transform: scale(1.03); }
         
         .card-stats-badge { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); padding: 6px 12px; border-radius: 15px; font-size: 12px; font-weight: 800; color: var(--accent); box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; gap: 8px; z-index: 2;}
 
@@ -129,30 +95,18 @@
 
         footer { background: #ffffff; padding: 40px 5%; text-align: center; border-top: 1px solid rgba(0,0,0,0.03); color: var(--text-muted); font-weight: 600; font-size: 15px; margin-top: auto; }
         footer a { color: var(--accent); text-decoration: none; margin: 0 15px; transition: var(--transition); font-weight: 700;}
-        footer a:hover { color: var(--primary); }
 
-        @keyframes floatHero { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px) rotate(5deg); } }
-
-        /* --- ✨ MOBILE LAYOUT (APP FEEL) ✨ --- */
         @media (max-width: 850px) {
-            body { padding-bottom: 80px; } /* Create space so content isn't hidden by bottom bar */
-            
-            /* Hide top navigation links, center the logo */
+            body { padding-bottom: 80px; } 
             header .desktop-nav { display: none; }
             header { justify-content: center; padding: 15px 5%; border-bottom: none; background: rgba(252, 252, 253, 0.9); box-shadow: none;}
-            
-            /* Show Bottom App Bar */
             .bottom-nav { display: flex; }
-
             .hero { padding: 40px 5%; }
             .hero-title { font-size: 36px; }
-            .hero::before, .hero::after { display: none; }
-            .btn-main, .btn-secondary { width: 100%; margin: 10px 0; display: block; }
+            .btn-main, .btn-secondary, .btn-push { width: 100%; margin: 10px 0; display: block; }
             .manga-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;}
             .manga-card img { height: 220px; }
             .section-header { flex-direction: column; align-items: flex-start; gap: 10px;}
-            
-            /* Hide footer bottom padding so it doesn't look weird above app bar */
             footer { padding-bottom: 20px; border-bottom: none; }
         }
     </style>
@@ -178,6 +132,8 @@
             <a href="discover.html" class="btn-main">📖 Start Reading</a>
             <a href="#" onclick="checkSummonAccess()" class="btn-secondary">✨ Summon Manga</a>
         </div>
+        
+        <button id="manualPushBtn" class="btn-push" onclick="manualPushSubscribe()">🔔 Turn On Magic Notifications</button>
     </section>
 
     <section class="section-container" id="continueReadingSection" style="display: none; padding-top: 20px;">
@@ -241,7 +197,6 @@
             });
         }
 
-        // --- AUTH CHECKER ---
         const token = localStorage.getItem('mangakan_token');
         if (token) {
             document.getElementById('authNavArea').innerHTML = '<a href="profile.html" class="nav-auth-btn" style="background: var(--text-dark);">🔮 My Profile</a>';
@@ -251,7 +206,6 @@
                 bottomAuth.innerHTML = '<span class="nav-icon">🔮</span><span class="nav-label">Profile</span>';
             }
 
-            // ✨ NEW: LOAD TRAVELER'S LOG IF LOGGED IN ✨
             fetch('/api/continue-reading', { headers: { 'Authorization': `Bearer ${token}` } })
             .then(res => res.json())
             .then(data => {
@@ -268,8 +222,6 @@
                             </div>
                         </div>
                     `).join('');
-                } else {
-                    document.getElementById('continueReadingSection').style.display = 'none';
                 }
             });
         }
@@ -279,68 +231,77 @@
             else { window.location.href = 'login.html'; }
         }
 
-      // ✨ THE FLOATING BELL & FORCE SYNC MAGIC ✨
+        // ✨ THE PHYSICAL BUTTON LOGIC ✨
         window.addEventListener('load', async () => {
-            const token = localStorage.getItem('mangakan_token');
-            if (!token) return; // Only ask logged-in users
+            if (!token) return; // Must be logged in
 
             if ('serviceWorker' in navigator && 'PushManager' in window) {
-                const registration = await navigator.serviceWorker.ready;
-                const existingSub = await registration.pushManager.getSubscription();
-                
-                if (existingSub) {
-                    // 🔮 THE FIX: Your phone already has a subscription! 
-                    // Let's silently sync it to your new Render server so it stops saying "0 devices".
-                    await fetch('/api/subscribe-push', {
-                        method: 'POST',
-                        body: JSON.stringify(existingSub),
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
-                    });
-                    console.log("✨ Ghost subscription synced with server!");
-                } else if (Notification.permission !== 'denied') {
-                    // If no subscription exists, AND they haven't blocked us, show the cute bell!
-                    const prompt = document.createElement('div');
-                    prompt.id = 'pushPrompt';
-                    prompt.innerHTML = `
-                        <div style="position: fixed; bottom: 100px; right: 20px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(255,154,158,0.3); border: 2px solid #ff9a9e; z-index: 1000; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease;">
-                            <span style="font-size: 24px; animation: floatHero 2s infinite alternate;">🔔</span>
-                            <span style="font-weight: 800; color: #ff9a9e; font-family: 'Nunito'; font-size: 14px;">Enable Magic<br>Notifications!</span>
-                        </div>
-                    `;
-                    document.body.appendChild(prompt);
-
-                    document.getElementById('pushPrompt').onclick = async () => {
-                        try {
-                            const publicVapidKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBtc3sHKEB2z0OPQ0-lP_WkE4';
-                            const padding = '='.repeat((4 - publicVapidKey.length % 4) % 4);
-                            const base64 = (publicVapidKey + padding).replace(/\-/g, '+').replace(/_/g, '/');
-                            const rawData = window.atob(base64);
-                            const outputArray = new Uint8Array(rawData.length);
-                            for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
-
-                            const subscription = await registration.pushManager.subscribe({
-                                userVisibleOnly: true,
-                                applicationServerKey: outputArray
-                            });
-
-                            await fetch('/api/subscribe-push', {
-                                method: 'POST',
-                                body: JSON.stringify(subscription),
-                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
-                            });
-                            
-                            document.getElementById('pushPrompt').style.display = 'none';
-                            alert("🌸 Notifications enabled! You are now connected to the realm.");
-                        } catch (err) { 
-                            console.log(err); 
-                            alert("Oops! Your phone blocked the magic. Please check your browser's site settings and allow notifications.");
-                        }
-                    };
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    const existingSub = await registration.pushManager.getSubscription();
+                    
+                    if (existingSub) {
+                        // Secretly sync to the new server database
+                        fetch('/api/subscribe-push', {
+                            method: 'POST',
+                            body: JSON.stringify(existingSub),
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                        });
+                    } else if (Notification.permission !== 'denied') {
+                        // Show the physical button!
+                        document.getElementById('manualPushBtn').style.display = 'inline-block';
+                    }
+                } catch (e) {
+                    console.error(e);
                 }
-            } else {
-                console.log("Push notifications are blocked by this device (If iPhone, you must 'Add to Home Screen' first).");
             }
         });
+
+        // This runs ONLY when the user physically clicks the button
+        async function manualPushSubscribe() {
+            if (!token) { alert("You must be logged in!"); return; }
+
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                
+                // Force the browser to show the Allow/Block prompt
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    alert("❌ You blocked notifications, or your phone disabled them! Go to your browser Settings -> Site Settings -> Allow Notifications.");
+                    return;
+                }
+
+                const publicVapidKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBtc3sHKEB2z0OPQ0-lP_WkE4';
+                const padding = '='.repeat((4 - publicVapidKey.length % 4) % 4);
+                const base64 = (publicVapidKey + padding).replace(/\-/g, '+').replace(/_/g, '/');
+                const rawData = window.atob(base64);
+                const outputArray = new Uint8Array(rawData.length);
+                for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: outputArray
+                });
+
+                const response = await fetch('/api/subscribe-push', {
+                    method: 'POST',
+                    body: JSON.stringify(subscription),
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert("🌸 Magic Notifications successfully connected!");
+                    document.getElementById('manualPushBtn').style.display = 'none';
+                } else {
+                    alert("❌ Server refused the connection.");
+                }
+
+            } catch (err) {
+                alert("❌ Browser Error: " + err.message);
+            }
+        }
+
         // --- 🧠 THE ALGORITHM ALCHEMY ---
         window.addEventListener('load', async () => {
             try {
