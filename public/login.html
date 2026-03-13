@@ -87,12 +87,14 @@
         
         @keyframes floatHero { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px) rotate(5deg); } }
 
+        /* ✨ MOBILE CSS FIX ✨ */
         @media (max-width: 850px) {
             body { padding-bottom: 80px; }
             header .desktop-nav { display: none; }
             header { justify-content: center; padding: 15px 5%; border-bottom: none; background: rgba(252, 252, 253, 0.9); box-shadow: none;}
             .bottom-nav { display: flex; }
-            .auth-card { padding: 40px 25px; border-radius: 24px; }
+            main { padding: 30px 5%; }
+            .auth-card { padding: 40px 20px; border-radius: 24px; width: 100%; overflow: hidden; }
             .auth-card::before, .auth-card::after { display: none; }
             footer { padding-bottom: 20px; border-bottom: none; }
         }
@@ -128,7 +130,7 @@
                  data-auto_prompt="false">
             </div>
             <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 25px;">
-                <div class="g_id_signin" data-type="standard" data-size="large" data-width="360" data-theme="outline" data-text="continue_with" data-shape="pill" data-logo_alignment="center"></div>
+                <div class="g_id_signin" data-type="standard" data-size="large" data-width="280" data-theme="outline" data-text="continue_with" data-shape="pill" data-logo_alignment="center"></div>
             </div>
 
             <div class="divider"><span>OR CONTINUE WITH EMAIL</span></div>
@@ -202,7 +204,7 @@
     <script>
         window.addEventListener('load', () => {
             const token = localStorage.getItem('mangakan_token');
-            if (token) { window.location.href = 'index.html'; } // Hide login page if already logged in!
+            if (token) { window.location.href = 'index.html'; }
         });
 
         async function handleGoogleResponse(response) {

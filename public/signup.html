@@ -9,12 +9,10 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
-        /* --- PREMIUM & CUTE CSS VARIABLES --- */
         :root {
             --bg-main: #fcfcfd; --bg-card: #ffffff; --primary: #ff9a9e; 
             --accent: #a18cd1; --text-dark: #2d3142; --text-muted: #8c92a4;
             --shadow-subtle: 0 12px 30px rgba(161, 140, 209, 0.08);
-            --shadow-hover: 0 20px 40px rgba(255, 154, 158, 0.18);
             --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
@@ -30,16 +28,6 @@
 
         h1, h2, h3, .logo, nav a, .auth-title, .btn-submit, .nav-label { font-family: 'Poppins', sans-serif; }
 
-        /* --- THE ANIMATING MASCOT --- */
-        #mascot {
-            position: fixed; top: -100px; left: -100px; 
-            width: 75px; height: 75px; background: transparent; pointer-events: none; 
-            z-index: 9998; display: flex; justify-content: center; align-items: center;
-            animation: breatheCharacter 2s ease-in-out infinite alternate;
-        }
-        #character-sprite { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 15px rgba(255, 154, 158, 0.3)); }
-
-        /* --- LOADING SCREEN --- */
         #loader {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: var(--bg-main); display: flex; justify-content: center; align-items: center; flex-direction: column;
@@ -48,7 +36,6 @@
         .magic-orb { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); animation: breatheOrb 2s ease-in-out infinite; }
         .loader-text { margin-top: 25px; font-weight: 700; font-size: 16px; letter-spacing: 1.5px; color: var(--text-dark); animation: pulseText 2s infinite; }
 
-        /* --- DESKTOP NAVBAR --- */
         header {
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px);
             padding: 18px 5%; display: flex; justify-content: space-between; align-items: center;
@@ -61,7 +48,6 @@
         .nav-auth-btn { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white !important; padding: 10px 24px; border-radius: 20px; font-weight: 700 !important; box-shadow: 0 5px 15px rgba(255, 154, 158, 0.3); transition: var(--transition); }
         .nav-auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(161, 140, 209, 0.4); color: white !important; }
 
-        /* --- ✨ MOBILE BOTTOM APP BAR ✨ --- */
         .bottom-nav {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%;
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
@@ -74,7 +60,6 @@
         .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-3px); }
         .nav-label { font-size: 11px; font-weight: 700; }
 
-        /* --- ✨ AUTHENTICATION CARD ✨ --- */
         main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 60px 5%; }
 
         .auth-card {
@@ -118,20 +103,18 @@
         footer { background: #ffffff; padding: 30px 5%; text-align: center; border-top: 1px solid rgba(0,0,0,0.03); color: var(--text-muted); font-weight: 600; font-size: 14px; margin-top: auto; }
         footer a { color: var(--accent); text-decoration: none; margin: 0 12px; transition: var(--transition); }
 
-        /* --- ANIMATIONS --- */
-        @keyframes breatheCharacter { 0% { transform: scale(1); } 100% { transform: scale(1.04) translateY(-2px); } }
         @keyframes breatheOrb { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 154, 158, 0.4); } 50% { transform: scale(1.15); box-shadow: 0 0 40px rgba(161, 140, 209, 0.6); } }
         @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         @keyframes floatHero { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px) rotate(5deg); } }
 
-        /* --- ✨ MOBILE APP ALIGNMENT ✨ --- */
+        /* ✨ MOBILE CSS FIX ✨ */
         @media (max-width: 850px) {
             body { padding-bottom: 80px; }
             header .desktop-nav { display: none; }
             header { justify-content: center; padding: 15px 5%; border-bottom: none; background: rgba(252, 252, 253, 0.9); box-shadow: none;}
             .bottom-nav { display: flex; }
-            #mascot { display: none; }
-            .auth-card { padding: 40px 25px; border-radius: 24px; }
+            main { padding: 30px 5%; }
+            .auth-card { padding: 40px 20px; border-radius: 24px; width: 100%; overflow: hidden;}
             .auth-card::before, .auth-card::after { display: none; }
             footer { padding-bottom: 20px; border-bottom: none; }
         }
@@ -142,7 +125,10 @@
 </head>
 <body>
 
-   
+    <div id="loader">
+        <div class="magic-orb"></div>
+        <div class="loader-text">Opening Portals...</div>
+    </div>
 
     <header>
         <div class="logo" onclick="window.location.href='index.html'">Mangakan</div>
@@ -169,15 +155,7 @@
                  data-auto_prompt="false">
             </div>
             <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 25px;">
-                <div class="g_id_signin" 
-                     data-type="standard" 
-                     data-size="large"
-                     data-width="360" 
-                     data-theme="outline" 
-                     data-text="continue_with" 
-                     data-shape="pill" 
-                     data-logo_alignment="center">
-                </div>
+                <div class="g_id_signin" data-type="standard" data-size="large" data-width="280" data-theme="outline" data-text="continue_with" data-shape="pill" data-logo_alignment="center"></div>
             </div>
 
             <div class="divider"><span>OR CONTINUE WITH EMAIL</span></div>
@@ -242,33 +220,16 @@
     </div>
 
     <script>
-        // --- LOADING SCREEN ---
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const loader = document.getElementById('loader');
                 if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
             }, 800); 
             
-            // Auth Checker
             const token = localStorage.getItem('mangakan_token');
-            if (token) {
-                // Desktop
-                document.getElementById('navBtn').innerHTML = '🔮 My Profile';
-                document.getElementById('navBtn').href = 'profile.html';
-                
-                // Mobile
-                const bottomAuth = document.getElementById('bottomAuthBtn');
-                if(bottomAuth) {
-                    bottomAuth.href = 'profile.html';
-                    bottomAuth.innerHTML = '<span class="nav-icon">🔮</span><span class="nav-label">Profile</span>';
-                }
-                
-                // Optional: redirect to index immediately if they shouldn't be on signup page
-                window.location.href = 'index.html';
-            }
+            if (token) { window.location.href = 'index.html'; }
         });
 
-        // ✨ GOOGLE SIGNUP MAGIC ✨
         async function handleGoogleResponse(response) {
             const token = response.credential;
             const btn = document.getElementById('submitBtn');
@@ -276,29 +237,13 @@
             btn.innerText = '⏳ Verifying Google Magic...';
 
             try {
-                const res = await fetch('/api/google-auth', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token })
-                });
-                
+                const res = await fetch('/api/google-auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) });
                 const data = await res.json();
-                if (data.success) {
-                    localStorage.setItem('mangakan_token', data.token);
-                    window.location.href = 'index.html'; 
-                } else {
-                    errorMsg.innerText = data.message;
-                    errorMsg.style.display = 'block';
-                    btn.innerText = '✨ Create Account';
-                }
-            } catch (err) {
-                errorMsg.innerText = 'Connection to the vault failed.';
-                errorMsg.style.display = 'block';
-                btn.innerText = '✨ Create Account';
-            }
+                if (data.success) { localStorage.setItem('mangakan_token', data.token); window.location.href = 'index.html'; } 
+                else { errorMsg.innerText = data.message; errorMsg.style.display = 'block'; btn.innerText = '✨ Create Account'; }
+            } catch (err) { errorMsg.innerText = 'Connection to the vault failed.'; errorMsg.style.display = 'block'; btn.innerText = '✨ Create Account'; }
         }
 
-        // NORMAL EMAIL SIGNUP (STEP 1: SEND OTP)
         async function simulateSignup() {
             const btn = document.getElementById('submitBtn');
             const username = document.getElementById('userName').value;
@@ -310,30 +255,13 @@
             errorMsg.style.display = 'none';
 
             try {
-                const response = await fetch('/api/send-otp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email, password })
-                });
-
+                const response = await fetch('/api/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) });
                 const data = await response.json();
-
-                if (data.success) {
-                    btn.innerHTML = '✨ Create Account';
-                    document.getElementById('otpModal').style.display = 'flex';
-                } else {
-                    errorMsg.innerText = data.message;
-                    errorMsg.style.display = 'block';
-                    btn.innerHTML = '✨ Create Account';
-                }
-            } catch (err) {
-                errorMsg.innerText = 'Server is sleeping! Try again later.';
-                errorMsg.style.display = 'block';
-                btn.innerHTML = '✨ Create Account';
-            }
+                if (data.success) { btn.innerHTML = '✨ Create Account'; document.getElementById('otpModal').style.display = 'flex'; } 
+                else { errorMsg.innerText = data.message; errorMsg.style.display = 'block'; btn.innerHTML = '✨ Create Account'; }
+            } catch (err) { errorMsg.innerText = 'Server is sleeping! Try again later.'; errorMsg.style.display = 'block'; btn.innerHTML = '✨ Create Account'; }
         }
 
-        // NORMAL EMAIL SIGNUP (STEP 2: VERIFY OTP)
         async function verifyOTP() {
             const btn = document.getElementById('verifyBtn');
             const email = document.getElementById('userEmail').value;
@@ -344,38 +272,15 @@
             btn.innerHTML = '⏳ Verifying...';
 
             try {
-                const response = await fetch('/api/verify-otp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, otp })
-                });
-
+                const response = await fetch('/api/verify-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, otp }) });
                 const data = await response.json();
-
-                if (data.success) {
-                    localStorage.setItem('mangakan_token', data.token);
-                    btn.innerHTML = '✨ Success!';
-                    setTimeout(() => { window.location.href = 'index.html'; }, 1000);
-                } else {
-                    alert("❌ " + data.message);
-                    btn.innerHTML = 'Verify & Join';
-                }
-            } catch (err) {
-                alert('Connection failed.');
-                btn.innerHTML = 'Verify & Join';
-            }
+                if (data.success) { localStorage.setItem('mangakan_token', data.token); btn.innerHTML = '✨ Success!'; setTimeout(() => { window.location.href = 'index.html'; }, 1000); } 
+                else { alert("❌ " + data.message); btn.innerHTML = 'Verify & Join'; }
+            } catch (err) { alert('Connection failed.'); btn.innerHTML = 'Verify & Join'; }
         }
            
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('✨ ServiceWorker registered successfully!');
-                    })
-                    .catch(err => {
-                        console.log('❌ ServiceWorker registration failed: ', err);
-                    });
-            });
+            window.addEventListener('load', () => { navigator.serviceWorker.register('/service-worker.js').catch(err => {}); });
         }
     </script>
 </body>

@@ -279,23 +279,28 @@
             else { window.location.href = 'login.html'; }
         }
 
-        // ✨ ASK TO SEND CUTE NOTIFICATIONS ✨
+      // ✨ THE FLOATING BELL FOR NOTIFICATIONS ✨
         window.addEventListener('load', async () => {
-            if (!token) return;
+            const token = localStorage.getItem('mangakan_token');
+            if (!token) return; // Only ask logged-in users
+
             if ('serviceWorker' in navigator && 'PushManager' in window) {
                 const registration = await navigator.serviceWorker.ready;
                 const existingSub = await registration.pushManager.getSubscription();
                 
+                // If they are not subscribed, show the cute bouncing bell!
                 if (!existingSub) {
                     const prompt = document.createElement('div');
+                    prompt.id = 'pushPrompt';
                     prompt.innerHTML = `
-                        <div id="pushPrompt" style="position: fixed; bottom: 90px; right: 20px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(255,154,158,0.3); border: 2px solid #ff9a9e; z-index: 1000; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease;">
+                        <div style="position: fixed; bottom: 100px; right: 20px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(255,154,158,0.3); border: 2px solid #ff9a9e; z-index: 1000; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease;">
                             <span style="font-size: 24px; animation: floatHero 2s infinite alternate;">🔔</span>
                             <span style="font-weight: 800; color: #ff9a9e; font-family: 'Nunito'; font-size: 14px;">Enable Magic<br>Notifications!</span>
                         </div>
                     `;
                     document.body.appendChild(prompt);
 
+                    // Browsers require a PHYSICAL CLICK to allow notifications!
                     document.getElementById('pushPrompt').onclick = async () => {
                         try {
                             const publicVapidKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBtc3sHKEB2z0OPQ0-lP_WkE4';
@@ -306,22 +311,26 @@
                             for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
 
                             const subscription = await registration.pushManager.subscribe({
-                                userVisibleOnly: true, applicationServerKey: outputArray
+                                userVisibleOnly: true,
+                                applicationServerKey: outputArray
                             });
 
                             await fetch('/api/subscribe-push', {
-                                method: 'POST', body: JSON.stringify(subscription),
+                                method: 'POST',
+                                body: JSON.stringify(subscription),
                                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
                             });
                             
                             document.getElementById('pushPrompt').style.display = 'none';
                             alert("🌸 Notifications enabled!");
-                        } catch (err) { console.log(err); }
+                        } catch (err) { 
+                            console.log(err); 
+                            alert("You blocked notifications in your phone settings! Please go to your browser settings and allow them.");
+                        }
                     };
                 }
             }
         });
-
         // --- 🧠 THE ALGORITHM ALCHEMY ---
         window.addEventListener('load', async () => {
             try {
