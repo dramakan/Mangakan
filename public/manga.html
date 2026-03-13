@@ -72,6 +72,7 @@
         .stats-row { display: flex; justify-content: center; gap: 15px; font-size: 14px; font-weight: 800; color: var(--accent); margin-bottom: 20px; }
         .stats-row span { display: flex; align-items: center; gap: 5px; background: rgba(161, 140, 209, 0.08); padding: 6px 15px; border-radius: 12px;}
 
+        /* ✨ Read More Description Setup ✨ */
         .sidebar-desc { 
             font-size: 14px; color: var(--text-muted); margin-bottom: 5px; line-height: 1.7; font-weight: 600; text-align: center;
             display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
@@ -84,6 +85,7 @@
         }
         .read-more-btn:hover { color: var(--accent); transform: translateY(-2px); }
         
+        /* ✨ NATIVE SHARE BUTTON ✨ */
         .btn-share { 
             width: 100%; background: var(--bg-card); color: var(--accent); padding: 14px; border-radius: 16px; 
             font-weight: 800; font-size: 14px; border: 2px dashed rgba(161, 140, 209, 0.4); cursor: pointer; 
@@ -208,7 +210,7 @@
             
             <button class="btn-primary" id="btnResume" onclick="resumeReading()" style="display: none;">📖 Resume Reading</button>
 
-            <button class="btn-share" onclick="shareManga()">📲 Share with Friends</button>
+            <button class="btn-share" onclick="shareManga()">📲 Share this Chapter</button>
 
             <div class="action-row" id="actionRow" style="display:none;">
                 <button class="btn-action" id="btnLike" onclick="toggleLike()">🤍 Like</button>
@@ -297,7 +299,7 @@
         let currentChapterIndex = -1;
         let currentUserId = null;
         let currentUserFavorites = []; 
-        let currentUserProgress = []; // ✨ NEW: Stores cloud progress
+        let currentUserProgress = []; // ✨ CLOUD PROGRESS VARIABLE
 
         window.addEventListener('load', async () => {
             const token = localStorage.getItem('mangakan_token');
@@ -337,21 +339,40 @@
             loadRelatedMangas();
         });
 
+        // ✨ EXACT CHAPTER SHARING LOGIC ✨
         async function shareManga() {
             const title = document.getElementById('sbTitle').innerText;
-            const urlParams = new URLSearchParams(window.location.search);
-            const ch = urlParams.get('ch');
-            const chapterText = ch ? ` Chapter ${ch}` : '';
+            
+            // Figure out which chapter they are looking at right now
+            let chNum = '';
+            if (currentChapterIndex !== -1 && chaptersData[currentChapterIndex]) {
+                chNum = chaptersData[currentChapterIndex].chapterNumber;
+            } else {
+                const urlParams = new URLSearchParams(window.location.search);
+                chNum = urlParams.get('ch') || '';
+            }
+
+            const chapterText = chNum ? ` Chapter ${chNum}` : '';
+            
+            // Ensure the URL perfectly captures the &ch parameter
+            let shareUrl = window.location.href;
+            if (chNum && !shareUrl.includes('&ch=')) {
+                 shareUrl += `&ch=${chNum}`;
+            }
             
             const shareData = {
                 title: title,
                 text: `✨ I'm reading "${title}"${chapterText} on Mangakan! Check it out:`,
-                url: window.location.href 
+                url: shareUrl 
             };
 
             try {
-                if (navigator.share) { await navigator.share(shareData); } 
-                else { navigator.clipboard.writeText(window.location.href); alert("✨ Link copied to clipboard!"); }
+                if (navigator.share) { 
+                    await navigator.share(shareData); 
+                } else { 
+                    navigator.clipboard.writeText(shareUrl); 
+                    alert("✨ Chapter link copied to clipboard!"); 
+                }
             } catch (err) { console.log('Share cancelled.'); }
         }
 
@@ -377,7 +398,7 @@
                     document.getElementById('viewCount').innerText = `👁️ ${manga.views + 1}`; 
                     document.getElementById('likeCount').innerText = `❤️ ${manga.likes.length}`;
 
-                    // ✨ NEW: Check Cloud Progress First! ✨
+                    // ✨ Check Cloud Progress First! ✨
                     let savedProgress = null;
                     if (currentUserId && currentUserProgress.length > 0) {
                         const cloudProg = currentUserProgress.find(p => p.mangaId === currentMangaId);
@@ -543,7 +564,7 @@
             // Backup Local Save
             localStorage.setItem('mangakan_progress_' + currentMangaId, index);
 
-            // ✨ NEW: SAVE DIRECTLY TO CLOUD! ✨
+            // ✨ SAVE DIRECTLY TO CLOUD! ✨
             if (currentUserId) {
                 const token = localStorage.getItem('mangakan_token');
                 fetch('/api/save-progress', {
@@ -553,6 +574,7 @@
                 });
             }
             
+            // Change URL so exact chapter can be shared
             window.history.replaceState(null, '', `?id=${currentMangaId}&ch=${chNum}`);
 
             const resumeBtn = document.getElementById('btnResume');

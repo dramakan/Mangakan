@@ -27,11 +27,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // ==========================================
-// ✉️ EMAIL TRANSPORTER SETUP
+// ✉️ EMAIL TRANSPORTER SETUP (RENDER FIXED!)
 // ==========================================
+// Using explicit host and port 465 bypasses Render's firewall blocks
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, 
+    auth: { 
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS 
+    }
 });
 
 // ==========================================
@@ -69,7 +75,6 @@ const userSchema = new mongoose.Schema({
     bio: { type: String, default: '' },      
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Manga' }], 
     pushSubscriptions: [{ type: Object }],
-    // ✨ NEW: The Cloud Traveler's Log ✨
     readingProgress: [{ 
         mangaId: { type: mongoose.Schema.Types.ObjectId, ref: 'Manga' }, 
         chapterIndex: Number,
@@ -104,45 +109,65 @@ const commentSchema = new mongoose.Schema({
 const Comment = mongoose.model('Comment', commentSchema);
 
 // ==========================================
-// ✨ CUTE EMAIL TEMPLATE GENERATOR ✨
-// ==========================================
-// ==========================================
-// ✨ CUTE EMAIL TEMPLATE GENERATOR (MOBILE FIXED) ✨
+// ✨ SUPER DUPER CUTE EMAIL TEMPLATE ✨
 // ==========================================
 const createCuteEmail = (title, message, bigText, subText) => `
-<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fcfcfd; font-family: 'Arial', sans-serif; padding: 20px 10px;">
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap');
+</style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #fff5f7; font-family: 'Nunito', Arial, sans-serif;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #fff5f7; padding: 50px 10px;">
     <tr>
-        <td align="center">
-            <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 450px; background: #ffffff; border-radius: 20px; border: 2px dashed #ff9a9e; margin: 0 auto;">
+      <td align="center">
+        
+        <table border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 28px; border: 3px solid #ffe1e5; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 15px 35px rgba(255, 154, 158, 0.15);">
+          <tr>
+            <td style="padding: 45px 25px;">
+              
+              <div style="font-size: 42px; margin-bottom: 15px;">✨</div>
+
+              <h2 style="color: #2d3142; font-size: 26px; margin: 0 0 12px 0; font-weight: 800;">${title}</h2>
+              
+              <p style="color: #8c92a4; font-size: 16px; line-height: 1.6; margin: 0 0 35px 0; font-weight: 600;">${message}</p>
+              
+              ${bigText ? `
+              <table border="0" cellspacing="0" cellpadding="0" width="100%" style="margin: 0 auto 30px auto;">
                 <tr>
-                    <td align="center" style="padding: 30px 20px;">
-                        <h2 style="color: #2d3142; margin: 0 0 10px 0; font-size: 22px;">${title}</h2>
-                        <p style="color: #8c92a4; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0;">${message}</p>
-                        ${bigText ? `
-                        <table cellpadding="0" cellspacing="0" style="margin: 0 auto 20px auto; background: #ff9a9e; border-radius: 16px;">
-                            <tr>
-                                <td align="center" style="padding: 15px 25px;">
-                                    <h1 style="color: #ffffff; font-size: 28px; letter-spacing: 4px; margin: 0;">${bigText}</h1>
-                                </td>
-                            </tr>
-                        </table>` : ''}
-                        ${subText ? `<p style="font-size: 13px; color: #a18cd1; font-weight: bold; margin: 0;">${subText}</p>` : ''}
-                        <div style="margin-top: 30px; border-top: 1px solid #fdf0f0; padding-top: 20px;">
-                            <p style="font-size: 12px; color: #8c92a4; margin: 0;">With magic,<br>The Mangakan Mascot 🌸</p>
-                        </div>
-                    </td>
+                  <td align="center" style="background: #ff9a9e; background: linear-gradient(135deg, #ff9a9e 0%, #a18cd1 100%); border-radius: 22px; padding: 25px 15px;">
+                    <span style="color: #ffffff; font-size: 40px; letter-spacing: 12px; font-weight: 800; margin: 0; display: block; text-shadow: 0 2px 10px rgba(0,0,0,0.1);">${bigText}</span>
+                  </td>
                 </tr>
-            </table>
-        </td>
+              </table>` : ''}
+              
+              ${subText ? `<p style="color: #a18cd1; font-size: 14px; font-weight: 800; margin: 0;">${subText}</p>` : ''}
+              
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 40px;">
+                <tr>
+                  <td align="center" style="border-top: 2px dashed #ffe1e5; padding-top: 30px;">
+                    <p style="color: #8c92a4; font-size: 14px; margin: 0; line-height: 1.6; font-weight: 600;">Sending you lots of magic,<br><strong style="color: #ff9a9e; font-size: 16px;">Mangakan 🌸</strong></p>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+        </table>
+
+      </td>
     </tr>
-</table>
+  </table>
+</body>
+</html>
 `;
 
 // ==========================================
 // 🪄 API ENDPOINTS
 // ==========================================
 
-// ✨ NEW: SAVE CLOUD PROGRESS ✨
 app.post('/api/save-progress', async (req, res) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
@@ -166,7 +191,6 @@ app.post('/api/save-progress', async (req, res) => {
     } catch (error) { res.status(500).json({ success: false }); }
 });
 
-// ✨ NEW: FETCH CONTINUED READING ✨
 app.get('/api/continue-reading', async (req, res) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
@@ -179,7 +203,7 @@ app.get('/api/continue-reading', async (req, res) => {
         const validProgress = user.readingProgress
             .filter(p => p.mangaId !== null)
             .sort((a, b) => b.lastReadAt - a.lastReadAt)
-            .slice(0, 4); // Show top 4 recent reads
+            .slice(0, 4);
         
         res.json({ success: true, progress: validProgress });
     } catch (error) { res.status(500).json({ success: false }); }
@@ -284,7 +308,10 @@ app.post('/api/send-otp', async (req, res) => {
 
         await transporter.sendMail(mailOptions);
         res.json({ success: true, message: 'OTP sent to your email!' });
-    } catch (error) { res.status(500).json({ success: false, message: 'Failed to send email.' }); }
+    } catch (error) { 
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to send email.' }); 
+    }
 });
 
 app.post('/api/verify-otp', async (req, res) => {
@@ -341,7 +368,10 @@ app.post('/api/forgot-password', async (req, res) => {
 
         await transporter.sendMail(mailOptions);
         res.json({ success: true, message: 'Reset code sent to your email!' });
-    } catch (error) { res.status(500).json({ success: false, message: 'Failed to send email.' }); }
+    } catch (error) { 
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to send email.' }); 
+    }
 });
 
 app.post('/api/reset-password', async (req, res) => {
@@ -457,7 +487,7 @@ async function sendChapterNotifications(mangaId, chapterNumber, chapterTitle) {
         const mailOptions = {
             from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`, to: sub.email,
             subject: `✨ New Chapter: ${manga.title} Chapter ${chapterNumber} is out!`,
-            html: createCuteEmail("A new scroll has been summoned!", `<strong>${manga.title}</strong> just released <strong>Chapter ${chapterNumber} ${chapterNameText}</strong>.`, null, `<a href="${mangaUrl}" style="display: inline-block; padding: 15px 30px; background: #a18cd1; color: white; text-decoration: none; border-radius: 20px; font-weight: bold; margin-top: 20px;">Read it now</a>`)
+            html: createCuteEmail("A new scroll has been summoned!", `<strong>${manga.title}</strong> just released <strong>Chapter ${chapterNumber} ${chapterNameText}</strong>.`, null, `<a href="${mangaUrl}" style="display: inline-block; padding: 12px 25px; background: #a18cd1; color: white; text-decoration: none; border-radius: 16px; font-weight: bold; margin-top: 15px;">Read it now</a>`)
         };
         await transporter.sendMail(mailOptions).catch(e => {});
         if (sub.pushSubscriptions && sub.pushSubscriptions.length > 0) {
