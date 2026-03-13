@@ -72,7 +72,18 @@
         .stats-row { display: flex; justify-content: center; gap: 15px; font-size: 14px; font-weight: 800; color: var(--accent); margin-bottom: 20px; }
         .stats-row span { display: flex; align-items: center; gap: 5px; background: rgba(161, 140, 209, 0.08); padding: 6px 15px; border-radius: 12px;}
 
-        .sidebar-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.7; font-weight: 600; text-align: center;}
+        /* ✨ NEW: Read More Description Setup ✨ */
+        .sidebar-desc { 
+            font-size: 14px; color: var(--text-muted); margin-bottom: 5px; line-height: 1.7; font-weight: 600; text-align: center;
+            display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .sidebar-desc.expanded { display: block; -webkit-line-clamp: unset; }
+        
+        .read-more-btn { 
+            background: none; border: none; color: var(--primary); font-weight: 800; font-family: 'Nunito'; font-size: 13px; 
+            cursor: pointer; margin-bottom: 25px; transition: var(--transition); display: none; width: 100%; text-align: center;
+        }
+        .read-more-btn:hover { color: var(--accent); transform: translateY(-2px); }
         
         .action-row { display: flex; gap: 10px; margin-bottom: 25px; }
         .btn-action { flex: 1; background: rgba(255, 154, 158, 0.1); color: var(--primary); padding: 14px; border-radius: 16px; font-weight: 800; font-size: 14px; border: 2px solid transparent; cursor: pointer; transition: var(--transition); font-family: 'Nunito';}
@@ -186,6 +197,7 @@
             </div>
 
             <p class="sidebar-desc" id="sbDesc"></p>
+            <button id="readMoreBtn" class="read-more-btn" onclick="toggleDesc()">✨ Read More</button>
             
             <button class="btn-primary" id="btnResume" onclick="resumeReading()" style="display: none;">📖 Resume Reading</button>
 
@@ -330,6 +342,14 @@
                     document.getElementById('sbDesc').innerText = manga.description || '';
                     document.getElementById('sbGenre').innerText = (manga.genres && manga.genres.length > 0) ? manga.genres[0] : 'Magic';
                     
+                    // ✨ Show 'Read More' if description is taller than its container
+                    setTimeout(() => {
+                        const descEl = document.getElementById('sbDesc');
+                        if (descEl.scrollHeight > descEl.clientHeight) {
+                            document.getElementById('readMoreBtn').style.display = 'block';
+                        }
+                    }, 50);
+                    
                     document.getElementById('viewCount').innerText = `👁️ ${manga.views + 1}`; 
                     document.getElementById('likeCount').innerText = `❤️ ${manga.likes.length}`;
 
@@ -363,6 +383,14 @@
                     renderChapterList();
                 }
             } catch(e) { console.error("Failed to load manga."); }
+        }
+
+        // ✨ TOGGLE READ MORE LOGIC ✨
+        function toggleDesc() {
+            const desc = document.getElementById('sbDesc');
+            const btn = document.getElementById('readMoreBtn');
+            desc.classList.toggle('expanded');
+            btn.innerHTML = desc.classList.contains('expanded') ? '✨ Show Less' : '✨ Read More';
         }
 
         function resumeReading() {
