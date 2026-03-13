@@ -35,8 +35,8 @@ self.addEventListener('push', function(event) {
     const title = data.title || "✨ Mangakan Misses You!";
     const options = {
         body: data.body || "Come read some magical new chapters! 🌸",
-        icon: '/favicon.png', // The cute icon that shows in their notifications
-        badge: '/favicon.png',
+        icon: 'favicon.png', // The cute icon that shows in their notifications
+        badge: 'favicon.png',
         vibrate: [100, 50, 100], // Makes the phone vibrate happily!
         data: { url: data.url || '/' }
     };

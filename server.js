@@ -106,19 +106,36 @@ const Comment = mongoose.model('Comment', commentSchema);
 // ==========================================
 // ✨ CUTE EMAIL TEMPLATE GENERATOR ✨
 // ==========================================
+// ==========================================
+// ✨ CUTE EMAIL TEMPLATE GENERATOR (MOBILE FIXED) ✨
+// ==========================================
 const createCuteEmail = (title, message, bigText, subText) => `
-<div style="background-color: #fcfcfd; padding: 40px 20px; font-family: 'Arial', sans-serif;">
-    <div style="max-width: 500px; margin: 0 auto; background: #ffffff; padding: 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(161, 140, 209, 0.1); border: 2px dashed #ff9a9e; text-align: center;">
-        <h2 style="color: #2d3142; margin-bottom: 10px; font-size: 24px;">${title}</h2>
-        <p style="color: #8c92a4; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">${message}</p>
-        ${bigText ? `
-        <div style="margin: 20px 0; padding: 20px; background: linear-gradient(135deg, #ff9a9e, #a18cd1); border-radius: 16px;">
-            <h1 style="color: #ffffff; font-size: 32px; letter-spacing: 8px; margin: 0;">${bigText}</h1>
-        </div>` : ''}
-        ${subText ? `<p style="font-size: 13px; color: #a18cd1; font-weight: bold;">${subText}</p>` : ''}
-        <p style="font-size: 12px; color: #8c92a4; margin-top: 30px;">With magic,<br>The Mangakan Mascot 🌸</p>
-    </div>
-</div>
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fcfcfd; font-family: 'Arial', sans-serif; padding: 20px 10px;">
+    <tr>
+        <td align="center">
+            <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 450px; background: #ffffff; border-radius: 20px; border: 2px dashed #ff9a9e; margin: 0 auto;">
+                <tr>
+                    <td align="center" style="padding: 30px 20px;">
+                        <h2 style="color: #2d3142; margin: 0 0 10px 0; font-size: 22px;">${title}</h2>
+                        <p style="color: #8c92a4; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0;">${message}</p>
+                        ${bigText ? `
+                        <table cellpadding="0" cellspacing="0" style="margin: 0 auto 20px auto; background: #ff9a9e; border-radius: 16px;">
+                            <tr>
+                                <td align="center" style="padding: 15px 25px;">
+                                    <h1 style="color: #ffffff; font-size: 28px; letter-spacing: 4px; margin: 0;">${bigText}</h1>
+                                </td>
+                            </tr>
+                        </table>` : ''}
+                        ${subText ? `<p style="font-size: 13px; color: #a18cd1; font-weight: bold; margin: 0;">${subText}</p>` : ''}
+                        <div style="margin-top: 30px; border-top: 1px solid #fdf0f0; padding-top: 20px;">
+                            <p style="font-size: 12px; color: #8c92a4; margin: 0;">With magic,<br>The Mangakan Mascot 🌸</p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 `;
 
 // ==========================================
