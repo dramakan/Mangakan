@@ -49,16 +49,19 @@
         .nav-auth-btn { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white !important; padding: 10px 24px; border-radius: 20px; font-weight: 700 !important; box-shadow: 0 5px 15px rgba(255, 154, 158, 0.3); transition: var(--transition); }
         .nav-auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(161, 140, 209, 0.4); color: white !important; }
 
+      /* --- ✨ MOBILE BOTTOM APP BAR ✨ --- */
         .bottom-nav {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%;
             background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 154, 158, 0.2); z-index: 2000;
-            padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -5px 20px rgba(161, 140, 209, 0.08);
+            padding-bottom: env(safe-area-inset-bottom);
         }
         .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; color: var(--text-muted); text-decoration: none; transition: var(--transition); }
         .bottom-nav-item:hover, .bottom-nav-item.active { color: var(--primary); }
         .nav-icon { font-size: 22px; margin-bottom: 4px; transition: var(--transition); }
-        
+        .bottom-nav-item:hover .nav-icon, .bottom-nav-item.active .nav-icon { transform: translateY(-3px); }
+        .nav-label { font-size: 11px; font-weight: 700; }
+
         .hero { padding: 80px 5%; text-align: center; position: relative; overflow: hidden; }
         .hero-title { font-size: 48px; font-weight: 800; color: var(--text-dark); margin-bottom: 20px; line-height: 1.2;}
         .hero-title span { background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -133,7 +136,6 @@
             <a href="#" onclick="checkSummonAccess()" class="btn-secondary">✨ Summon Manga</a>
         </div>
         
-        <button id="manualPushBtn" class="btn-push" onclick="manualPushSubscribe()">🔔 Turn On Magic Notifications</button>
     </section>
 
     <section class="section-container" id="continueReadingSection" style="display: none; padding-top: 20px;">
