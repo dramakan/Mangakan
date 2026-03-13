@@ -279,7 +279,7 @@
             else { window.location.href = 'login.html'; }
         }
 
-      // ✨ THE FLOATING BELL FOR NOTIFICATIONS ✨
+      // ✨ THE FLOATING BELL & FORCE SYNC MAGIC ✨
         window.addEventListener('load', async () => {
             const token = localStorage.getItem('mangakan_token');
             if (!token) return; // Only ask logged-in users
@@ -288,8 +288,17 @@
                 const registration = await navigator.serviceWorker.ready;
                 const existingSub = await registration.pushManager.getSubscription();
                 
-                // If they are not subscribed, show the cute bouncing bell!
-                if (!existingSub) {
+                if (existingSub) {
+                    // 🔮 THE FIX: Your phone already has a subscription! 
+                    // Let's silently sync it to your new Render server so it stops saying "0 devices".
+                    await fetch('/api/subscribe-push', {
+                        method: 'POST',
+                        body: JSON.stringify(existingSub),
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                    });
+                    console.log("✨ Ghost subscription synced with server!");
+                } else if (Notification.permission !== 'denied') {
+                    // If no subscription exists, AND they haven't blocked us, show the cute bell!
                     const prompt = document.createElement('div');
                     prompt.id = 'pushPrompt';
                     prompt.innerHTML = `
@@ -300,7 +309,6 @@
                     `;
                     document.body.appendChild(prompt);
 
-                    // Browsers require a PHYSICAL CLICK to allow notifications!
                     document.getElementById('pushPrompt').onclick = async () => {
                         try {
                             const publicVapidKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBtc3sHKEB2z0OPQ0-lP_WkE4';
@@ -322,13 +330,15 @@
                             });
                             
                             document.getElementById('pushPrompt').style.display = 'none';
-                            alert("🌸 Notifications enabled!");
+                            alert("🌸 Notifications enabled! You are now connected to the realm.");
                         } catch (err) { 
                             console.log(err); 
-                            alert("You blocked notifications in your phone settings! Please go to your browser settings and allow them.");
+                            alert("Oops! Your phone blocked the magic. Please check your browser's site settings and allow notifications.");
                         }
                     };
                 }
+            } else {
+                console.log("Push notifications are blocked by this device (If iPhone, you must 'Add to Home Screen' first).");
             }
         });
         // --- 🧠 THE ALGORITHM ALCHEMY ---
