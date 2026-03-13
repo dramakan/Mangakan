@@ -9,7 +9,6 @@ const jwt = require('jsonwebtoken');
 const { v2: cloudinary } = require('cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const { OAuth2Client } = require('google-auth-library');
-const nodemailer = require('nodemailer');
 const webpush = require('web-push');
 const cron = require('node-cron');
 
@@ -27,24 +26,34 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // ==========================================
-// ✉️ EMAIL TRANSPORTER SETUP (RENDER FIXED!)
+// ✉️ THE HTTP EMAIL PORTAL (FIREWALL BYPASS)
 // ==========================================
-// Using explicit host and port 465 bypasses Render's firewall blocks
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, 
-    auth: { 
-        user: process.env.EMAIL_USER, 
-        pass: process.env.EMAIL_PASS 
+async function sendMagicEmail(to, subject, htmlBody) {
+    if (!process.env.EMAIL_PORTAL_URL) {
+        console.error("❌ Missing EMAIL_PORTAL_URL in Render Environment!");
+        return;
     }
-});
+    try {
+        await fetch(process.env.EMAIL_PORTAL_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                secret: 'MANGAKAN_MAGIC_KEY_2026',
+                to: to,
+                subject: subject,
+                html: htmlBody
+            })
+        });
+    } catch (err) {
+        console.error('Portal connection failed:', err);
+    }
+}
 
 // ==========================================
 // 🔔 PUSH NOTIFICATION SETUP
 // ==========================================
 webpush.setVapidDetails(
-    `mailto:${process.env.EMAIL_USER}`,
+    `mailto:mangakan@example.com`,
     process.env.VAPID_PUBLIC_KEY,
     process.env.VAPID_PRIVATE_KEY
 );
@@ -53,7 +62,7 @@ const otpVault = {};
 const resetVault = {}; 
 
 // ==========================================
-// ☁️ CLOUDINARY UPLOAD CONFIGURATION
+// ☁️ CLOUDINARY SETUP
 // ==========================================
 cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET });
 const storage = new CloudinaryStorage({ cloudinary: cloudinary, params: { folder: 'mangakan_vault', allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp'] } });
@@ -123,15 +132,11 @@ const createCuteEmail = (title, message, bigText, subText) => `
   <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #fff5f7; padding: 50px 10px;">
     <tr>
       <td align="center">
-        
         <table border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 28px; border: 3px solid #ffe1e5; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 15px 35px rgba(255, 154, 158, 0.15);">
           <tr>
             <td style="padding: 45px 25px;">
-              
               <div style="font-size: 42px; margin-bottom: 15px;">✨</div>
-
               <h2 style="color: #2d3142; font-size: 26px; margin: 0 0 12px 0; font-weight: 800;">${title}</h2>
-              
               <p style="color: #8c92a4; font-size: 16px; line-height: 1.6; margin: 0 0 35px 0; font-weight: 600;">${message}</p>
               
               ${bigText ? `
@@ -148,15 +153,13 @@ const createCuteEmail = (title, message, bigText, subText) => `
               <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 40px;">
                 <tr>
                   <td align="center" style="border-top: 2px dashed #ffe1e5; padding-top: 30px;">
-                    <p style="color: #8c92a4; font-size: 14px; margin: 0; line-height: 1.6; font-weight: 600;">Sending you lots of magic,<br><strong style="color: #ff9a9e; font-size: 16px;">Mangakan 🌸</strong></p>
+                    <p style="color: #8c92a4; font-size: 14px; margin: 0; line-height: 1.6; font-weight: 600;">Sending you lots of magic,<br><strong style="color: #ff9a9e; font-size: 16px;">The Mangakan Mascot 🌸</strong></p>
                   </td>
                 </tr>
               </table>
-
             </td>
           </tr>
         </table>
-
       </td>
     </tr>
   </table>
@@ -278,12 +281,8 @@ app.post('/api/google-auth', async (req, res) => {
             user = new User({ username: name, email: email, password: randomPassword, avatarUrl: picture });
             await user.save();
 
-            const mailOptions = {
-                from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`, to: email,
-                subject: '🌸 Welcome to the Mangakan Realm!',
-                html: createCuteEmail("🌸 Welcome to Mangakan!", `Hi ${name}! We are so happy you joined our beautiful comic sanctuary. Your magic journey begins now.`, null, "Happy reading!")
-            };
-            transporter.sendMail(mailOptions).catch(e => console.log(e));
+            const html = createCuteEmail("🌸 Welcome to Mangakan!", `Hi ${name}! We are so happy you joined our beautiful comic sanctuary. Your magic journey begins now.`, null, "Happy reading!");
+            await sendMagicEmail(email, '🌸 Welcome to the Mangakan Realm!', html);
         }
 
         const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -300,16 +299,11 @@ app.post('/api/send-otp', async (req, res) => {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         otpVault[email] = { otp, username, password, expires: Date.now() + 300000 };
 
-        const mailOptions = {
-            from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`, to: email,
-            subject: '✨ Your Mangakan Verification Code',
-            html: createCuteEmail("✨ Verify Your Magic", "You are one step away from joining the realm. Enter this code to open the gates:", otp, "This spell fades in 5 minutes.")
-        };
-
-        await transporter.sendMail(mailOptions);
+        const html = createCuteEmail("✨ Verify Your Magic", "You are one step away from joining the realm. Enter this code to open the gates:", otp, "This spell fades in 5 minutes.");
+        await sendMagicEmail(email, '✨ Your Mangakan Verification Code', html);
+        
         res.json({ success: true, message: 'OTP sent to your email!' });
     } catch (error) { 
-        console.error(error);
         res.status(500).json({ success: false, message: 'Failed to send email.' }); 
     }
 });
@@ -327,12 +321,8 @@ app.post('/api/verify-otp', async (req, res) => {
         await newUser.save();
         delete otpVault[email];
 
-        const mailOptions = {
-            from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`, to: email,
-            subject: '🌸 Welcome to the Mangakan Realm!',
-            html: createCuteEmail("🌸 Welcome to Mangakan!", `Hi ${storedData.username}! Your account has been magically created. Enjoy the library!`, null, "Happy reading!")
-        };
-        transporter.sendMail(mailOptions).catch(e=>console.log(e));
+        const html = createCuteEmail("🌸 Welcome to Mangakan!", `Hi ${storedData.username}! Your account has been magically created. Enjoy the library!`, null, "Happy reading!");
+        await sendMagicEmail(email, '🌸 Welcome to the Mangakan Realm!', html);
 
         const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         res.json({ success: true, token, message: 'Welcome to the Realm!' });
@@ -360,16 +350,11 @@ app.post('/api/forgot-password', async (req, res) => {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         resetVault[email] = { otp, expires: Date.now() + 300000 }; 
 
-        const mailOptions = {
-            from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`, to: email,
-            subject: '✨ Password Reset Code',
-            html: createCuteEmail("🔒 Password Reset", "Forgot your magical key? No worries, use this code to create a new one:", otp, "This code is valid for 5 minutes.")
-        };
-
-        await transporter.sendMail(mailOptions);
+        const html = createCuteEmail("🔒 Password Reset", "Forgot your magical key? No worries, use this code to create a new one:", otp, "This code is valid for 5 minutes.");
+        await sendMagicEmail(email, '✨ Password Reset Code', html);
+        
         res.json({ success: true, message: 'Reset code sent to your email!' });
     } catch (error) { 
-        console.error(error);
         res.status(500).json({ success: false, message: 'Failed to send email.' }); 
     }
 });
@@ -484,12 +469,9 @@ async function sendChapterNotifications(mangaId, chapterNumber, chapterTitle) {
     const payload = JSON.stringify({ title: `✨ New Chapter: ${manga.title}`, body: `Chapter ${chapterNumber} ${chapterNameText} is out!`, url: mangaUrl });
 
     for (const sub of subscribers) {
-        const mailOptions = {
-            from: `"Mangakan Realm" <${process.env.EMAIL_USER}>`, to: sub.email,
-            subject: `✨ New Chapter: ${manga.title} Chapter ${chapterNumber} is out!`,
-            html: createCuteEmail("A new scroll has been summoned!", `<strong>${manga.title}</strong> just released <strong>Chapter ${chapterNumber} ${chapterNameText}</strong>.`, null, `<a href="${mangaUrl}" style="display: inline-block; padding: 12px 25px; background: #a18cd1; color: white; text-decoration: none; border-radius: 16px; font-weight: bold; margin-top: 15px;">Read it now</a>`)
-        };
-        await transporter.sendMail(mailOptions).catch(e => {});
+        const html = createCuteEmail("A new scroll has been summoned!", `<strong>${manga.title}</strong> just released <strong>Chapter ${chapterNumber} ${chapterNameText}</strong>.`, null, `<a href="${mangaUrl}" style="display: inline-block; padding: 12px 25px; background: #a18cd1; color: white; text-decoration: none; border-radius: 16px; font-weight: bold; margin-top: 15px;">Read it now</a>`);
+        await sendMagicEmail(sub.email, `✨ New Chapter: ${manga.title} Chapter ${chapterNumber} is out!`, html);
+        
         if (sub.pushSubscriptions && sub.pushSubscriptions.length > 0) {
             for (const pushSub of sub.pushSubscriptions) { webpush.sendNotification(pushSub, payload).catch(e => {}); }
         }
